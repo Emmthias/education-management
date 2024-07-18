@@ -1,9 +1,9 @@
-FROM php:7.0.6-fpm
-RUN rm /etc/apt/sources.list
-
-RUN echo "deb http://archive.debian.org/debian-security jessie/updates main" >> /etc/apt/sources.list.d/jessie.list
-
-RUN echo "deb http://archive.debian.org/debian jessie main" >> /etc/apt/sources.list.d/jessie.list
+FROM php:8.2-fpm
+#RUN rm /etc/apt/sources.list
+#
+#RUN echo "deb http://archive.debian.org/debian-security jessie/updates main" >> /etc/apt/sources.list.d/jessie.list
+#
+#RUN echo "deb http://archive.debian.org/debian jessie main" >> /etc/apt/sources.list.d/jessie.list
 
 RUN apt-get update && \
     apt-get install -y --force-yes --no-install-recommends \
