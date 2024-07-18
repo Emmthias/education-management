@@ -1,0 +1,54 @@
+version: "3"
+services:
+  nginx:
+    build:
+      context: .
+      dockerfile: nginx/Dockerfile
+    ports:
+      - "8080:80"
+#      - "9003:9003"
+    networks:
+      - internal
+    volumes:
+      - ./src/:/var/www/html
+  php:
+    build:
+      context: .
+      dockerfile: php/Dockerfile
+    networks:
+      - internal
+    environment:
+      XDEBUG_MODE: debug
+      XDEBUG_CONFIG: client_host=192.168.100.111 client_port=9003
+    volumes:
+      - ./src:/var/www/html
+      - ./logs/php.log:/var/log/fpm-php.www.log
+  db:
+    image: mysql:5.7.42
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_USER: jp
+      MYSQL_DATABASE: quizller
+      MYSQL_PASSWORD: test
+      MYSQL_ROOT_PASSWORD: test
+    networks:
+      - internal
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    links:
+      - db:db
+    ports:
+      - "8000:80"
+    environment:
+      MYSQL_USER: jp
+      MYSQL_PASSWORD: test
+      MYSQL_ROOT_PASSWORD: test
+    volumes:
+      - ./conf:/etc/mysql/conf.d
+      - persistent:/var/lib/mysql
+volumes:
+  persistent:
+networks:
+  internal:
+    driver: bridge
