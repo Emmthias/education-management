@@ -7,6 +7,8 @@
 * Author:  Olivier PLATHEY                                                     *
 *******************************************************************************/
 
+use src\admin\assets\vendor\fpdf\makefont\TTFParser;
+
 require('ttfparser.php');
 
 function Message($txt, $severity='')
@@ -43,7 +45,7 @@ function Error($txt)
 
 function LoadMap($enc)
 {
-	$file = dirname(__FILE__).'/'.strtolower($enc).'.map';
+	$file = dirname(__FILE__) . 'makefont.php/' .strtolower($enc).'.map';
 	$a = file($file);
 	if(empty($a))
 		Error('Encoding not found: '.$enc);
