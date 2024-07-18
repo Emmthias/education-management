@@ -1,8 +1,6 @@
 <?php
 
-use src\admin\assets\vendor\SpreadsheetReader;
-
-include '../../database/config.php';
+    include '../../database/config.php';
     require_once('../assets/vendor/excel_reader2.php');
     require_once('../assets/vendor/SpreadsheetReader.php');
 

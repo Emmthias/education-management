@@ -101,7 +101,7 @@ if(isset($_SESSION["user_id"]))
           {
             $("#result").html("Login Successful");
             setTimeout(function(){
-              window.location="../../admin/files/dashboard.php";
+              window.location="files/dashboard.php";
             },1200);
           }
           else

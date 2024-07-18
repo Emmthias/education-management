@@ -1,13 +1,11 @@
 <?php
 /*******************************************************************************
-* Utility to generate font definition files                                    *
-*                                                                              *
-* Version: 1.3                                                                 *
-* Date:    2015-11-29                                                          *
-* Author:  Olivier PLATHEY                                                     *
-*******************************************************************************/
-
-use src\admin\assets\vendor\fpdf\makefont\TTFParser;
+ * Utility to generate font definition files                                    *
+ *                                                                              *
+ * Version: 1.3                                                                 *
+ * Date:    2015-11-29                                                          *
+ * Author:  Olivier PLATHEY                                                     *
+ *******************************************************************************/
 
 require('ttfparser.php');
 
@@ -45,7 +43,7 @@ function Error($txt)
 
 function LoadMap($enc)
 {
-	$file = dirname(__FILE__) . 'makefont.php/' .strtolower($enc).'.map';
+	$file = dirname(__FILE__).'/'.strtolower($enc).'.map';
 	$a = file($file);
 	if(empty($a))
 		Error('Encoding not found: '.$enc);

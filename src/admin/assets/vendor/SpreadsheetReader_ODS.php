@@ -1,6 +1,4 @@
 <?php
-
-namespace src\admin\assets\vendor;
 /**
  * Class for parsing ODS files
  *
@@ -42,40 +40,44 @@ class SpreadsheetReader_ODS implements Iterator, Countable
     /**
      * @param string Path to file
      * @param array Options:
-     *    TempDir => string Temporary directory path
-     *    ReturnDateTimeObjects => bool True => dates and times will be returned as PHP DateTime objects, false => as strings
+     *	TempDir => string Temporary directory path
+     *	ReturnDateTimeObjects => bool True => dates and times will be returned as PHP DateTime objects, false => as strings
      */
     public function __construct($Filepath, array $Options = null)
     {
-        if (!is_readable($Filepath)) {
-            throw new Exception('SpreadsheetReader_ODS: File not readable (' . $Filepath . ')');
+        if (!is_readable($Filepath))
+        {
+            throw new Exception('SpreadsheetReader_ODS: File not readable ('.$Filepath.')');
         }
 
-        $this->TempDir = isset($Options['TempDir']) && is_writable($Options['TempDir']) ?
+        $this -> TempDir = isset($Options['TempDir']) && is_writable($Options['TempDir']) ?
             $Options['TempDir'] :
             sys_get_temp_dir();
 
-        $this->TempDir = rtrim($this->TempDir, DIRECTORY_SEPARATOR);
-        $this->TempDir = $this->TempDir . DIRECTORY_SEPARATOR . uniqid() . DIRECTORY_SEPARATOR;
+        $this -> TempDir = rtrim($this -> TempDir, DIRECTORY_SEPARATOR);
+        $this -> TempDir = $this -> TempDir.DIRECTORY_SEPARATOR.uniqid().DIRECTORY_SEPARATOR;
 
         $Zip = new ZipArchive;
-        $Status = $Zip->open($Filepath);
+        $Status = $Zip -> open($Filepath);
 
-        if ($Status !== true) {
-            throw new Exception('SpreadsheetReader_ODS: File not readable (' . $Filepath . ') (Error ' . $Status . ')');
+        if ($Status !== true)
+        {
+            throw new Exception('SpreadsheetReader_ODS: File not readable ('.$Filepath.') (Error '.$Status.')');
         }
 
-        if ($Zip->locateName('content.xml') !== false) {
-            $Zip->extractTo($this->TempDir, 'content.xml');
-            $this->ContentPath = $this->TempDir . 'content.xml';
+        if ($Zip -> locateName('content.xml') !== false)
+        {
+            $Zip -> extractTo($this -> TempDir, 'content.xml');
+            $this -> ContentPath = $this -> TempDir.'content.xml';
         }
 
-        $Zip->close();
+        $Zip -> close();
 
-        if ($this->ContentPath && is_readable($this->ContentPath)) {
-            $this->Content = new XMLReader;
-            $this->Content->open($this->ContentPath);
-            $this->Valid = true;
+        if ($this -> ContentPath && is_readable($this -> ContentPath))
+        {
+            $this -> Content = new XMLReader;
+            $this -> Content -> open($this -> ContentPath);
+            $this -> Valid = true;
         }
     }
 
@@ -84,13 +86,15 @@ class SpreadsheetReader_ODS implements Iterator, Countable
      */
     public function __destruct()
     {
-        if ($this->Content && $this->Content instanceof XMLReader) {
-            $this->Content->close();
-            unset($this->Content);
+        if ($this -> Content && $this -> Content instanceof XMLReader)
+        {
+            $this -> Content -> close();
+            unset($this -> Content);
         }
-        if (file_exists($this->ContentPath)) {
-            @unlink($this->ContentPath);
-            unset($this->ContentPath);
+        if (file_exists($this -> ContentPath))
+        {
+            @unlink($this -> ContentPath);
+            unset($this -> ContentPath);
         }
     }
 
@@ -101,24 +105,28 @@ class SpreadsheetReader_ODS implements Iterator, Countable
      */
     public function Sheets()
     {
-        if ($this->Sheets === false) {
-            $this->Sheets = array();
+        if ($this -> Sheets === false)
+        {
+            $this -> Sheets = array();
 
-            if ($this->Valid) {
-                $this->SheetReader = new XMLReader;
-                $this->SheetReader->open($this->ContentPath);
+            if ($this -> Valid)
+            {
+                $this -> SheetReader = new XMLReader;
+                $this -> SheetReader -> open($this -> ContentPath);
 
-                while ($this->SheetReader->read()) {
-                    if ($this->SheetReader->name == 'table:table') {
-                        $this->Sheets[] = $this->SheetReader->getAttribute('table:name');
-                        $this->SheetReader->next();
+                while ($this -> SheetReader -> read())
+                {
+                    if ($this -> SheetReader -> name == 'table:table')
+                    {
+                        $this -> Sheets[] = $this -> SheetReader -> getAttribute('table:name');
+                        $this -> SheetReader -> next();
                     }
                 }
 
-                $this->SheetReader->close();
+                $this -> SheetReader -> close();
             }
         }
-        return $this->Sheets;
+        return $this -> Sheets;
     }
 
     /**
@@ -132,10 +140,11 @@ class SpreadsheetReader_ODS implements Iterator, Countable
     {
         $Index = (int)$Index;
 
-        $Sheets = $this->Sheets();
-        if (isset($Sheets[$Index])) {
-            $this->CurrentSheet = $Index;
-            $this->rewind();
+        $Sheets = $this -> Sheets();
+        if (isset($Sheets[$Index]))
+        {
+            $this -> CurrentSheet = $Index;
+            $this -> rewind();
 
             return true;
         }
@@ -144,27 +153,27 @@ class SpreadsheetReader_ODS implements Iterator, Countable
     }
 
     // !Iterator interface methods
-
     /**
      * Rewind the Iterator to the first element.
      * Similar to the reset() function for arrays in PHP
      */
     public function rewind()
     {
-        if ($this->Index > 0) {
+        if ($this -> Index > 0)
+        {
             // If the worksheet was already iterated, XML file is reopened.
             // Otherwise it should be at the beginning anyway
-            $this->Content->close();
-            $this->Content->open($this->ContentPath);
-            $this->Valid = true;
+            $this -> Content -> close();
+            $this -> Content -> open($this -> ContentPath);
+            $this -> Valid = true;
 
-            $this->TableOpen = false;
-            $this->RowOpen = false;
+            $this -> TableOpen = false;
+            $this -> RowOpen = false;
 
-            $this->CurrentRow = null;
+            $this -> CurrentRow = null;
         }
 
-        $this->Index = 0;
+        $this -> Index = 0;
     }
 
     /**
@@ -175,11 +184,12 @@ class SpreadsheetReader_ODS implements Iterator, Countable
      */
     public function current()
     {
-        if ($this->Index == 0 && is_null($this->CurrentRow)) {
-            $this->next();
-            $this->Index--;
+        if ($this -> Index == 0 && is_null($this -> CurrentRow))
+        {
+            $this -> next();
+            $this -> Index--;
         }
-        return $this->CurrentRow;
+        return $this -> CurrentRow;
     }
 
     /**
@@ -188,43 +198,52 @@ class SpreadsheetReader_ODS implements Iterator, Countable
      */
     public function next()
     {
-        $this->Index++;
+        $this -> Index++;
 
-        $this->CurrentRow = array();
+        $this -> CurrentRow = array();
 
-        if (!$this->TableOpen) {
+        if (!$this -> TableOpen)
+        {
             $TableCounter = 0;
             $SkipRead = false;
 
-            while ($this->Valid = ($SkipRead || $this->Content->read())) {
-                if ($SkipRead) {
+            while ($this -> Valid = ($SkipRead || $this -> Content -> read()))
+            {
+                if ($SkipRead)
+                {
                     $SkipRead = false;
                 }
 
-                if ($this->Content->name == 'table:table' && $this->Content->nodeType != XMLReader::END_ELEMENT) {
-                    if ($TableCounter == $this->CurrentSheet) {
-                        $this->TableOpen = true;
+                if ($this -> Content -> name == 'table:table' && $this -> Content -> nodeType != XMLReader::END_ELEMENT)
+                {
+                    if ($TableCounter == $this -> CurrentSheet)
+                    {
+                        $this -> TableOpen = true;
                         break;
                     }
 
                     $TableCounter++;
-                    $this->Content->next();
+                    $this -> Content -> next();
                     $SkipRead = true;
                 }
             }
         }
 
-        if ($this->TableOpen && !$this->RowOpen) {
-            while ($this->Valid = $this->Content->read()) {
-                switch ($this->Content->name) {
+        if ($this -> TableOpen && !$this -> RowOpen)
+        {
+            while ($this -> Valid = $this -> Content -> read())
+            {
+                switch ($this -> Content -> name)
+                {
                     case 'table:table':
-                        $this->TableOpen = false;
-                        $this->Content->next('office:document-content');
-                        $this->Valid = false;
+                        $this -> TableOpen = false;
+                        $this -> Content -> next('office:document-content');
+                        $this -> Valid = false;
                         break 2;
                     case 'table:table-row':
-                        if ($this->Content->nodeType != XMLReader::END_ELEMENT) {
-                            $this->RowOpen = true;
+                        if ($this -> Content -> nodeType != XMLReader::END_ELEMENT)
+                        {
+                            $this -> RowOpen = true;
                             break 2;
                         }
                         break;
@@ -232,45 +251,57 @@ class SpreadsheetReader_ODS implements Iterator, Countable
             }
         }
 
-        if ($this->RowOpen) {
+        if ($this -> RowOpen)
+        {
             $LastCellContent = '';
 
-            while ($this->Valid = $this->Content->read()) {
-                switch ($this->Content->name) {
+            while ($this -> Valid = $this -> Content -> read())
+            {
+                switch ($this -> Content -> name)
+                {
                     case 'table:table-cell':
-                        if ($this->Content->nodeType == XMLReader::END_ELEMENT || $this->Content->isEmptyElement) {
-                            if ($this->Content->nodeType == XMLReader::END_ELEMENT) {
+                        if ($this -> Content -> nodeType == XMLReader::END_ELEMENT || $this -> Content -> isEmptyElement)
+                        {
+                            if ($this -> Content -> nodeType == XMLReader::END_ELEMENT)
+                            {
                                 $CellValue = $LastCellContent;
-                            } elseif ($this->Content->isEmptyElement) {
+                            }
+                            elseif ($this -> Content -> isEmptyElement)
+                            {
                                 $LastCellContent = '';
                                 $CellValue = $LastCellContent;
                             }
 
-                            $this->CurrentRow[] = $LastCellContent;
+                            $this -> CurrentRow[] = $LastCellContent;
 
-                            if ($this->Content->getAttribute('table:number-columns-repeated') !== null) {
-                                $RepeatedColumnCount = $this->Content->getAttribute('table:number-columns-repeated');
+                            if ($this -> Content -> getAttribute('table:number-columns-repeated') !== null)
+                            {
+                                $RepeatedColumnCount = $this -> Content -> getAttribute('table:number-columns-repeated');
                                 // Checking if larger than one because the value is already added to the row once before
-                                if ($RepeatedColumnCount > 1) {
-                                    $this->CurrentRow = array_pad($this->CurrentRow, count($this->CurrentRow) + $RepeatedColumnCount - 1, $LastCellContent);
+                                if ($RepeatedColumnCount > 1)
+                                {
+                                    $this -> CurrentRow = array_pad($this -> CurrentRow, count($this -> CurrentRow) + $RepeatedColumnCount - 1, $LastCellContent);
                                 }
                             }
-                        } else {
+                        }
+                        else
+                        {
                             $LastCellContent = '';
                         }
                     case 'text:p':
-                        if ($this->Content->nodeType != XMLReader::END_ELEMENT) {
-                            $LastCellContent = $this->Content->readString();
+                        if ($this -> Content -> nodeType != XMLReader::END_ELEMENT)
+                        {
+                            $LastCellContent = $this -> Content -> readString();
                         }
                         break;
                     case 'table:table-row':
-                        $this->RowOpen = false;
+                        $this -> RowOpen = false;
                         break 2;
                 }
             }
         }
 
-        return $this->CurrentRow;
+        return $this -> CurrentRow;
     }
 
     /**
@@ -281,7 +312,7 @@ class SpreadsheetReader_ODS implements Iterator, Countable
      */
     public function key()
     {
-        return $this->Index;
+        return $this -> Index;
     }
 
     /**
@@ -292,19 +323,17 @@ class SpreadsheetReader_ODS implements Iterator, Countable
      */
     public function valid()
     {
-        return $this->Valid;
+        return $this -> Valid;
     }
 
     // !Countable interface method
-
     /**
      * Ostensibly should return the count of the contained items but this just returns the number
      * of rows read so far. It's not really correct but at least coherent.
      */
     public function count()
     {
-        return $this->Index + 1;
+        return $this -> Index + 1;
     }
 }
-
 ?>

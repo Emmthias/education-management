@@ -2,8 +2,10 @@
     session_start();
     if(!isset($_SESSION['student_details']))
         header("Location: ../index.php"); 
-    if(isset($_SESSION['test_ongoing']))
-        header("Location: quiz.php"); 
+    if(isset($_SESSION['test_ongoing'])) {
+        echo "Test Ongoing";
+        header("Location: quiz.php");
+    }
 ?>
 <html>
 
@@ -11,12 +13,13 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Quizller- Dashboard</title>
-    <link rel="icon" type="image/png" href="../../admin/assets/img/favicon.png">
+    <link rel="icon" type="image/png" href="../admin/assets/img/favicon.png">
     <link rel="stylesheet" type="text/css" href="../vendor/bootstrap/css/bootstrap.min.css">
     <link rel="stylesheet" type="text/css" href="../css/header.css">
     <link rel="stylesheet" type="text/css" href="../css/util.css">
     <link rel="stylesheet" type="text/css" href="../css/main.css">
     <script src="../vendor/jquery/jquery-3.2.1.min.js"></script>
+    <script src="../vendor/bootstrap/js/popper.min.js"></script>
     <script src="../vendor/bootstrap/js/bootstrap.min.js"></script>
     <script src="../vendor/tilt/tilt.jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/js-cookie@beta/dist/js.cookie.min.js"></script>
@@ -55,7 +58,7 @@
                 <!-- Header Icon mobile -->
                 <div class="header-icons-mobile">
                     <a href="#" class="header-wrapicon1 dis-block">
-                        <img src="../images/icons/logout.png" class="header-icon1" alt="ICON" onclick = 'logout()'>
+                        <img src="../images/icons/logout.png" class="header-icon1" alt="ICON" onclick = 'logout()'/>
                     </a>
                 </div>
             </div>
@@ -83,7 +86,7 @@
                                                                         <a href="quiz.php"><button type="button" class="btn btn-success" style="float:right;">Start Test</button></a>
                                                                 </div>
                                                             </div>
-                                                            
+
                                                         </div>
                                                     </div>
                                                 </div>
@@ -108,6 +111,7 @@
                 type: 'POST',
                 url: 'get_dashboard_contents.php',
                 success: function (response) {
+
                     console.log('hi');
                     console.log(response);
                     console.log(response.length);

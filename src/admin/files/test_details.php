@@ -477,7 +477,7 @@ if(!isset($_SESSION["user_id"]))
 
     <script type="text/javascript">
       $.notify({
-        message: 'General Settings Updated Successfully' 
+        message: 'General Settings Updated Successfully'
       },{
         type: 'success'
       });
@@ -491,7 +491,7 @@ if(!isset($_SESSION["user_id"]))
 
       <script type="text/javascript">
         $.notify({
-          message: 'There was an error updating general settings' 
+          message: 'There was an error updating general settings'
         },{
           type: 'danger'
         });

@@ -1,6 +1,4 @@
 <?php
-
-namespace src\admin\assets\vendor;
 /**
  * Class for parsing CSV files
  *
@@ -33,63 +31,74 @@ class SpreadsheetReader_CSV implements Iterator, Countable
     /**
      * @param string Path to file
      * @param array Options:
-     *    Enclosure => string CSV enclosure
-     *    Separator => string CSV separator
+     *	Enclosure => string CSV enclosure
+     *	Separator => string CSV separator
      */
     public function __construct($Filepath, array $Options = null)
     {
-        $this->Filepath = $Filepath;
+        $this -> Filepath = $Filepath;
 
-        if (!is_readable($Filepath)) {
-            throw new Exception('SpreadsheetReader_CSV: File not readable (' . $Filepath . ')');
+        if (!is_readable($Filepath))
+        {
+            throw new Exception('SpreadsheetReader_CSV: File not readable ('.$Filepath.')');
         }
 
         // For safety's sake
         @ini_set('auto_detect_line_endings', true);
 
-        $this->Options = array_merge($this->Options, $Options);
-        $this->Handle = fopen($Filepath, 'r');
+        $this -> Options = array_merge($this -> Options, $Options);
+        $this -> Handle = fopen($Filepath, 'r');
 
         // Checking the file for byte-order mark to determine encoding
-        $BOM16 = bin2hex(fread($this->Handle, 2));
-        if ($BOM16 == 'fffe') {
-            $this->Encoding = 'UTF-16LE';
+        $BOM16 = bin2hex(fread($this -> Handle, 2));
+        if ($BOM16 == 'fffe')
+        {
+            $this -> Encoding = 'UTF-16LE';
             //$this -> Encoding = 'UTF-16';
-            $this->BOMLength = 2;
-        } elseif ($BOM16 == 'feff') {
-            $this->Encoding = 'UTF-16BE';
+            $this -> BOMLength = 2;
+        }
+        elseif ($BOM16 == 'feff')
+        {
+            $this -> Encoding = 'UTF-16BE';
             //$this -> Encoding = 'UTF-16';
-            $this->BOMLength = 2;
+            $this -> BOMLength = 2;
         }
 
-        if (!$this->BOMLength) {
-            fseek($this->Handle, 0);
-            $BOM32 = bin2hex(fread($this->Handle, 4));
-            if ($BOM32 == '0000feff') {
+        if (!$this -> BOMLength)
+        {
+            fseek($this -> Handle, 0);
+            $BOM32 = bin2hex(fread($this -> Handle, 4));
+            if ($BOM32 == '0000feff')
+            {
                 //$this -> Encoding = 'UTF-32BE';
-                $this->Encoding = 'UTF-32';
-                $this->BOMLength = 4;
-            } elseif ($BOM32 == 'fffe0000') {
+                $this -> Encoding = 'UTF-32';
+                $this -> BOMLength = 4;
+            }
+            elseif ($BOM32 == 'fffe0000')
+            {
                 //$this -> Encoding = 'UTF-32LE';
-                $this->Encoding = 'UTF-32';
-                $this->BOMLength = 4;
+                $this -> Encoding = 'UTF-32';
+                $this -> BOMLength = 4;
             }
         }
 
-        fseek($this->Handle, 0);
-        $BOM8 = bin2hex(fread($this->Handle, 3));
-        if ($BOM8 == 'efbbbf') {
-            $this->Encoding = 'UTF-8';
-            $this->BOMLength = 3;
+        fseek($this -> Handle, 0);
+        $BOM8 = bin2hex(fread($this -> Handle, 3));
+        if ($BOM8 == 'efbbbf')
+        {
+            $this -> Encoding = 'UTF-8';
+            $this -> BOMLength = 3;
         }
 
         // Seeking the place right after BOM as the start of the real content
-        if ($this->BOMLength) {
-            fseek($this->Handle, $this->BOMLength);
+        if ($this -> BOMLength)
+        {
+            fseek($this -> Handle, $this -> BOMLength);
         }
 
         // Checking for the delimiter if it should be determined automatically
-        if (!$this->Options['Delimiter']) {
+        if (!$this -> Options['Delimiter'])
+        {
             // fgetcsv needs single-byte separators
             $Semicolon = ';';
             $Tab = "\t";
@@ -97,19 +106,20 @@ class SpreadsheetReader_CSV implements Iterator, Countable
 
             // Reading the first row and checking if a specific separator character
             // has more columns than others (it means that most likely that is the delimiter).
-            $SemicolonCount = count(fgetcsv($this->Handle, null, $Semicolon));
-            fseek($this->Handle, $this->BOMLength);
-            $TabCount = count(fgetcsv($this->Handle, null, $Tab));
-            fseek($this->Handle, $this->BOMLength);
-            $CommaCount = count(fgetcsv($this->Handle, null, $Comma));
-            fseek($this->Handle, $this->BOMLength);
+            $SemicolonCount = count(fgetcsv($this -> Handle, null, $Semicolon));
+            fseek($this -> Handle, $this -> BOMLength);
+            $TabCount = count(fgetcsv($this -> Handle, null, $Tab));
+            fseek($this -> Handle, $this -> BOMLength);
+            $CommaCount = count(fgetcsv($this -> Handle, null, $Comma));
+            fseek($this -> Handle, $this -> BOMLength);
 
             $Delimiter = $Semicolon;
-            if ($TabCount > $SemicolonCount || $CommaCount > $SemicolonCount) {
+            if ($TabCount > $SemicolonCount || $CommaCount > $SemicolonCount)
+            {
                 $Delimiter = $CommaCount > $TabCount ? $Comma : $Tab;
             }
 
-            $this->Options['Delimiter'] = $Delimiter;
+            $this -> Options['Delimiter'] = $Delimiter;
         }
     }
 
@@ -121,36 +131,36 @@ class SpreadsheetReader_CSV implements Iterator, Countable
      */
     public function Sheets()
     {
-        return array(0 => basename($this->Filepath));
+        return array(0 => basename($this -> Filepath));
     }
 
     /**
      * Changes sheet to another. Because CSV doesn't have any sheets
-     *    it just rewinds the file so the behaviour is compatible with other
-     *    sheet readers. (If an invalid index is given, it doesn't do anything.)
+     *	it just rewinds the file so the behaviour is compatible with other
+     *	sheet readers. (If an invalid index is given, it doesn't do anything.)
      *
      * @param bool Status
      */
     public function ChangeSheet($Index)
     {
-        if ($Index == 0) {
-            $this->rewind();
+        if ($Index == 0)
+        {
+            $this -> rewind();
             return true;
         }
         return false;
     }
 
     // !Iterator interface methods
-
     /**
      * Rewind the Iterator to the first element.
      * Similar to the reset() function for arrays in PHP
      */
     public function rewind()
     {
-        fseek($this->Handle, $this->BOMLength);
-        $this->CurrentRow = null;
-        $this->Index = 0;
+        fseek($this -> Handle, $this -> BOMLength);
+        $this -> CurrentRow = null;
+        $this -> Index = 0;
     }
 
     /**
@@ -161,11 +171,12 @@ class SpreadsheetReader_CSV implements Iterator, Countable
      */
     public function current()
     {
-        if ($this->Index == 0 && is_null($this->CurrentRow)) {
-            $this->next();
-            $this->Index--;
+        if ($this -> Index == 0 && is_null($this -> CurrentRow))
+        {
+            $this -> next();
+            $this -> Index--;
         }
-        return $this->CurrentRow;
+        return $this -> CurrentRow;
     }
 
     /**
@@ -174,50 +185,61 @@ class SpreadsheetReader_CSV implements Iterator, Countable
      */
     public function next()
     {
-        $this->CurrentRow = array();
+        $this -> CurrentRow = array();
 
         // Finding the place the next line starts for UTF-16 encoded files
         // Line breaks could be 0x0D 0x00 0x0A 0x00 and PHP could split lines on the
         //	first or the second linebreak leaving unnecessary \0 characters that mess up
         //	the output.
-        if ($this->Encoding == 'UTF-16LE' || $this->Encoding == 'UTF-16BE') {
-            while (!feof($this->Handle)) {
+        if ($this -> Encoding == 'UTF-16LE' || $this -> Encoding == 'UTF-16BE')
+        {
+            while (!feof($this -> Handle))
+            {
                 // While bytes are insignificant whitespace, do nothing
-                $Char = ord(fgetc($this->Handle));
-                if (!$Char || $Char == 10 || $Char == 13) {
+                $Char = ord(fgetc($this -> Handle));
+                if (!$Char || $Char == 10 || $Char == 13)
+                {
                     continue;
-                } else {
+                }
+                else
+                {
                     // When significant bytes are found, step back to the last place before them
-                    if ($this->Encoding == 'UTF-16LE') {
-                        fseek($this->Handle, ftell($this->Handle) - 1);
-                    } else {
-                        fseek($this->Handle, ftell($this->Handle) - 2);
+                    if ($this -> Encoding == 'UTF-16LE')
+                    {
+                        fseek($this -> Handle, ftell($this -> Handle) - 1);
+                    }
+                    else
+                    {
+                        fseek($this -> Handle, ftell($this -> Handle) - 2);
                     }
                     break;
                 }
             }
         }
 
-        $this->Index++;
-        $this->CurrentRow = fgetcsv($this->Handle, null, $this->Options['Delimiter'], $this->Options['Enclosure']);
+        $this -> Index++;
+        $this -> CurrentRow = fgetcsv($this -> Handle, null, $this -> Options['Delimiter'], $this -> Options['Enclosure']);
 
-        if ($this->CurrentRow) {
+        if ($this -> CurrentRow)
+        {
             // Converting multi-byte unicode strings
             // and trimming enclosure symbols off of them because those aren't recognized
             // in the relevan encodings.
-            if ($this->Encoding != 'ASCII' && $this->Encoding != 'UTF-8') {
-                $Encoding = $this->Encoding;
-                foreach ($this->CurrentRow as $Key => $Value) {
-                    $this->CurrentRow[$Key] = trim(trim(
-                        mb_convert_encoding($Value, 'UTF-8', $this->Encoding),
-                        $this->Options['Enclosure']
+            if ($this -> Encoding != 'ASCII' && $this -> Encoding != 'UTF-8')
+            {
+                $Encoding = $this -> Encoding;
+                foreach ($this -> CurrentRow as $Key => $Value)
+                {
+                    $this -> CurrentRow[$Key] = trim(trim(
+                        mb_convert_encoding($Value, 'UTF-8', $this -> Encoding),
+                        $this -> Options['Enclosure']
                     ));
                 }
 
             }
         }
 
-        return $this->CurrentRow;
+        return $this -> CurrentRow;
     }
 
     /**
@@ -228,7 +250,7 @@ class SpreadsheetReader_CSV implements Iterator, Countable
      */
     public function key()
     {
-        return $this->Index;
+        return $this -> Index;
     }
 
     /**
@@ -239,19 +261,17 @@ class SpreadsheetReader_CSV implements Iterator, Countable
      */
     public function valid()
     {
-        return ($this->CurrentRow || !feof($this->Handle));
+        return ($this -> CurrentRow || !feof($this -> Handle));
     }
 
     // !Countable interface method
-
     /**
      * Ostensibly should return the count of the contained items but this just returns the number
      * of rows read so far. It's not really correct but at least coherent.
      */
     public function count()
     {
-        return $this->Index + 1;
+        return $this -> Index + 1;
     }
 }
-
 ?>

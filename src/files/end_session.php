@@ -6,8 +6,10 @@
 
     foreach($student_data as $obj){
         $student_id = $obj->id;
-        $sql1 = "UPDATE students set status = 1 where id = '$student_id'";
-        mysqli_query($conn,$sql1); 
+        if ($_POST['message'] != 1) { // review abort scenario in "ongoing test"
+            $sql1 = "UPDATE students set status = 1 where id = '$student_id'";
+            mysqli_query($conn, $sql1);
+        }
     }
 
     if($_POST['message'] == 1)

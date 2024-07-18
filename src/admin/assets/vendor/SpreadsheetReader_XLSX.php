@@ -1,8 +1,4 @@
 <?php
-namespace src\admin\assets\vendor;
-
-use SpreadsheetReader_;
-
 /**
  * Class for parsing XLSX files specifically
  *
@@ -19,10 +15,10 @@ class SpreadsheetReader_XLSX implements Iterator, Countable
 
     /**
      * Number of shared strings that can be reasonably cached, i.e., that aren't read from file but stored in memory.
-     *    If the total number of shared strings is higher than this, caching is not used.
-     *    If this value is null, shared strings are cached regardless of amount.
-     *    With large shared string caches there are huge performance gains, however a lot of memory could be used which
-     *    can be a problem, especially on shared hosting.
+     *	If the total number of shared strings is higher than this, caching is not used.
+     *	If this value is null, shared strings are cached regardless of amount.
+     *	With large shared string caches there are huge performance gains, however a lot of memory could be used which
+     *	can be a problem, especially on shared hosting.
      */
     const SHARED_STRING_CACHE_LIMIT = 50000;
 
@@ -150,7 +146,7 @@ class SpreadsheetReader_XLSX implements Iterator, Countable
         // THA
         59 => 't0',
         60 => 't0.00',
-        61 => 't#,##0',
+        61 =>'t#,##0',
         62 => 't#,##0.00',
         67 => 't0%',
         68 => 't0.00%',
@@ -201,103 +197,121 @@ class SpreadsheetReader_XLSX implements Iterator, Countable
     /**
      * @param string Path to file
      * @param array Options:
-     *    TempDir => string Temporary directory path
-     *    ReturnDateTimeObjects => bool True => dates and times will be returned as PHP DateTime objects, false => as strings
+     *	TempDir => string Temporary directory path
+     *	ReturnDateTimeObjects => bool True => dates and times will be returned as PHP DateTime objects, false => as strings
      */
     public function __construct($Filepath, array $Options = null)
     {
-        if (!is_readable($Filepath)) {
-            throw new Exception('SpreadsheetReader_XLSX: File not readable (' . $Filepath . ')');
+        if (!is_readable($Filepath))
+        {
+            throw new Exception('SpreadsheetReader_XLSX: File not readable ('.$Filepath.')');
         }
 
-        $this->TempDir = isset($Options['TempDir']) && is_writable($Options['TempDir']) ?
+        $this -> TempDir = isset($Options['TempDir']) && is_writable($Options['TempDir']) ?
             $Options['TempDir'] :
             sys_get_temp_dir();
 
-        $this->TempDir = rtrim($this->TempDir, DIRECTORY_SEPARATOR);
-        $this->TempDir = $this->TempDir . DIRECTORY_SEPARATOR . uniqid() . DIRECTORY_SEPARATOR;
+        $this -> TempDir = rtrim($this -> TempDir, DIRECTORY_SEPARATOR);
+        $this -> TempDir = $this -> TempDir.DIRECTORY_SEPARATOR.uniqid().DIRECTORY_SEPARATOR;
 
         $Zip = new ZipArchive;
-        $Status = $Zip->open($Filepath);
+        $Status = $Zip -> open($Filepath);
 
-        if ($Status !== true) {
-            throw new Exception('SpreadsheetReader_XLSX: File not readable (' . $Filepath . ') (Error ' . $Status . ')');
+        if ($Status !== true)
+        {
+            throw new Exception('SpreadsheetReader_XLSX: File not readable ('.$Filepath.') (Error '.$Status.')');
         }
 
         // Getting the general workbook information
-        if ($Zip->locateName('xl/workbook.xml') !== false) {
-            $this->WorkbookXML = new SimpleXMLElement($Zip->getFromName('xl/workbook.xml'));
+        if ($Zip -> locateName('xl/workbook.xml') !== false)
+        {
+            $this -> WorkbookXML = new SimpleXMLElement($Zip -> getFromName('xl/workbook.xml'));
         }
 
         // Extracting the XMLs from the XLSX zip file
-        if ($Zip->locateName('xl/sharedStrings.xml') !== false) {
-            $this->SharedStringsPath = $this->TempDir . 'xl' . DIRECTORY_SEPARATOR . 'sharedStrings.xml';
-            $Zip->extractTo($this->TempDir, 'xl/sharedStrings.xml');
-            $this->TempFiles[] = $this->TempDir . 'xl' . DIRECTORY_SEPARATOR . 'sharedStrings.xml';
+        if ($Zip -> locateName('xl/sharedStrings.xml') !== false)
+        {
+            $this -> SharedStringsPath = $this -> TempDir.'xl'.DIRECTORY_SEPARATOR.'sharedStrings.xml';
+            $Zip -> extractTo($this -> TempDir, 'xl/sharedStrings.xml');
+            $this -> TempFiles[] = $this -> TempDir.'xl'.DIRECTORY_SEPARATOR.'sharedStrings.xml';
 
-            if (is_readable($this->SharedStringsPath)) {
-                $this->SharedStrings = new XMLReader;
-                $this->SharedStrings->open($this->SharedStringsPath);
-                $this->PrepareSharedStringCache();
+            if (is_readable($this -> SharedStringsPath))
+            {
+                $this -> SharedStrings = new XMLReader;
+                $this -> SharedStrings -> open($this -> SharedStringsPath);
+                $this -> PrepareSharedStringCache();
             }
         }
 
-        $Sheets = $this->Sheets();
+        $Sheets = $this -> Sheets();
 
-        foreach ($this->Sheets as $Index => $Name) {
-            if ($Zip->locateName('xl/worksheets/sheet' . $Index . '.xml') !== false) {
-                $Zip->extractTo($this->TempDir, 'xl/worksheets/sheet' . $Index . '.xml');
-                $this->TempFiles[] = $this->TempDir . 'xl' . DIRECTORY_SEPARATOR . 'worksheets' . DIRECTORY_SEPARATOR . 'sheet' . $Index . '.xml';
+        foreach ($this -> Sheets as $Index => $Name)
+        {
+            if ($Zip -> locateName('xl/worksheets/sheet'.$Index.'.xml') !== false)
+            {
+                $Zip -> extractTo($this -> TempDir, 'xl/worksheets/sheet'.$Index.'.xml');
+                $this -> TempFiles[] = $this -> TempDir.'xl'.DIRECTORY_SEPARATOR.'worksheets'.DIRECTORY_SEPARATOR.'sheet'.$Index.'.xml';
             }
         }
 
-        $this->ChangeSheet(0);
+        $this -> ChangeSheet(0);
 
         // If worksheet is present and is OK, parse the styles already
-        if ($Zip->locateName('xl/styles.xml') !== false) {
-            $this->StylesXML = new SimpleXMLElement($Zip->getFromName('xl/styles.xml'));
-            if ($this->StylesXML && $this->StylesXML->cellXfs && $this->StylesXML->cellXfs->xf) {
-                foreach ($this->StylesXML->cellXfs->xf as $Index => $XF) {
+        if ($Zip -> locateName('xl/styles.xml') !== false)
+        {
+            $this -> StylesXML = new SimpleXMLElement($Zip -> getFromName('xl/styles.xml'));
+            if ($this -> StylesXML && $this -> StylesXML -> cellXfs && $this -> StylesXML -> cellXfs -> xf)
+            {
+                foreach ($this -> StylesXML -> cellXfs -> xf as $Index => $XF)
+                {
                     // Format #0 is a special case - it is the "General" format that is applied regardless of applyNumberFormat
-                    if ($XF->attributes()->applyNumberFormat || (0 == (int)$XF->attributes()->numFmtId)) {
-                        $FormatId = (int)$XF->attributes()->numFmtId;
+                    if ($XF -> attributes() -> applyNumberFormat || (0 == (int)$XF -> attributes() -> numFmtId))
+                    {
+                        $FormatId = (int)$XF -> attributes() -> numFmtId;
                         // If format ID >= 164, it is a custom format and should be read from styleSheet\numFmts
-                        $this->Styles[] = $FormatId;
-                    } else {
+                        $this -> Styles[] = $FormatId;
+                    }
+                    else
+                    {
                         // 0 for "General" format
-                        $this->Styles[] = 0;
+                        $this -> Styles[] = 0;
                     }
                 }
             }
 
-            if ($this->StylesXML->numFmts && $this->StylesXML->numFmts->numFmt) {
-                foreach ($this->StylesXML->numFmts->numFmt as $Index => $NumFmt) {
-                    $this->Formats[(int)$NumFmt->attributes()->numFmtId] = (string)$NumFmt->attributes()->formatCode;
+            if ($this -> StylesXML -> numFmts && $this -> StylesXML -> numFmts -> numFmt)
+            {
+                foreach ($this -> StylesXML -> numFmts -> numFmt as $Index => $NumFmt)
+                {
+                    $this -> Formats[(int)$NumFmt -> attributes() -> numFmtId] = (string)$NumFmt -> attributes() -> formatCode;
                 }
             }
 
-            unset($this->StylesXML);
+            unset($this -> StylesXML);
         }
 
-        $Zip->close();
+        $Zip -> close();
 
         // Setting base date
-        if (!self::$BaseDate) {
+        if (!self::$BaseDate)
+        {
             self::$BaseDate = new DateTime;
-            self::$BaseDate->setTimezone(new DateTimeZone('UTC'));
-            self::$BaseDate->setDate(1900, 1, 0);
-            self::$BaseDate->setTime(0, 0, 0);
+            self::$BaseDate -> setTimezone(new DateTimeZone('UTC'));
+            self::$BaseDate -> setDate(1900, 1, 0);
+            self::$BaseDate -> setTime(0, 0, 0);
         }
 
         // Decimal and thousand separators
-        if (!self::$DecimalSeparator && !self::$ThousandSeparator && !self::$CurrencyCode) {
+        if (!self::$DecimalSeparator && !self::$ThousandSeparator && !self::$CurrencyCode)
+        {
             $Locale = localeconv();
             self::$DecimalSeparator = $Locale['decimal_point'];
             self::$ThousandSeparator = $Locale['thousands_sep'];
             self::$CurrencyCode = $Locale['int_curr_symbol'];
         }
 
-        if (function_exists('gmp_gcd')) {
+        if (function_exists('gmp_gcd'))
+        {
             self::$RuntimeInfo['GMPSupported'] = true;
         }
     }
@@ -307,34 +321,40 @@ class SpreadsheetReader_XLSX implements Iterator, Countable
      */
     public function __destruct()
     {
-        foreach ($this->TempFiles as $TempFile) {
+        foreach ($this -> TempFiles as $TempFile)
+        {
             @unlink($TempFile);
         }
 
         // Better safe than sorry - shouldn't try deleting '.' or '/', or '..'.
-        if (strlen($this->TempDir) > 2) {
-            @rmdir($this->TempDir . 'xl' . DIRECTORY_SEPARATOR . 'worksheets');
-            @rmdir($this->TempDir . 'xl');
-            @rmdir($this->TempDir);
+        if (strlen($this -> TempDir) > 2)
+        {
+            @rmdir($this -> TempDir.'xl'.DIRECTORY_SEPARATOR.'worksheets');
+            @rmdir($this -> TempDir.'xl');
+            @rmdir($this -> TempDir);
         }
 
-        if ($this->Worksheet && $this->Worksheet instanceof XMLReader) {
-            $this->Worksheet->close();
-            unset($this->Worksheet);
+        if ($this -> Worksheet && $this -> Worksheet instanceof XMLReader)
+        {
+            $this -> Worksheet -> close();
+            unset($this -> Worksheet);
         }
-        unset($this->WorksheetPath);
+        unset($this -> WorksheetPath);
 
-        if ($this->SharedStrings && $this->SharedStrings instanceof XMLReader) {
-            $this->SharedStrings->close();
-            unset($this->SharedStrings);
+        if ($this -> SharedStrings && $this -> SharedStrings instanceof XMLReader)
+        {
+            $this -> SharedStrings -> close();
+            unset($this -> SharedStrings);
         }
-        unset($this->SharedStringsPath);
+        unset($this -> SharedStringsPath);
 
-        if (isset($this->StylesXML)) {
-            unset($this->StylesXML);
+        if (isset($this -> StylesXML))
+        {
+            unset($this -> StylesXML);
         }
-        if ($this->WorkbookXML) {
-            unset($this->WorkbookXML);
+        if ($this -> WorkbookXML)
+        {
+            unset($this -> WorkbookXML);
         }
     }
 
@@ -345,22 +365,26 @@ class SpreadsheetReader_XLSX implements Iterator, Countable
      */
     public function Sheets()
     {
-        if ($this->Sheets === false) {
-            $this->Sheets = array();
-            foreach ($this->WorkbookXML->sheets->sheet as $Index => $Sheet) {
-                $Attributes = $Sheet->attributes('r', true);
-                foreach ($Attributes as $Name => $Value) {
-                    if ($Name == 'id') {
+        if ($this -> Sheets === false)
+        {
+            $this -> Sheets = array();
+            foreach ($this -> WorkbookXML -> sheets -> sheet as $Index => $Sheet)
+            {
+                $Attributes = $Sheet -> attributes('r', true);
+                foreach ($Attributes as $Name => $Value)
+                {
+                    if ($Name == 'id')
+                    {
                         $SheetID = (int)str_replace('rId', '', (string)$Value);
                         break;
                     }
                 }
 
-                $this->Sheets[$SheetID] = (string)$Sheet['name'];
+                $this -> Sheets[$SheetID] = (string)$Sheet['name'];
             }
-            ksort($this->Sheets);
+            ksort($this -> Sheets);
         }
-        return array_values($this->Sheets);
+        return array_values($this -> Sheets);
     }
 
     /**
@@ -373,18 +397,20 @@ class SpreadsheetReader_XLSX implements Iterator, Countable
     public function ChangeSheet($Index)
     {
         $RealSheetIndex = false;
-        $Sheets = $this->Sheets();
-        if (isset($Sheets[$Index])) {
-            $SheetIndexes = array_keys($this->Sheets);
+        $Sheets = $this -> Sheets();
+        if (isset($Sheets[$Index]))
+        {
+            $SheetIndexes = array_keys($this -> Sheets);
             $RealSheetIndex = $SheetIndexes[$Index];
         }
 
-        $TempWorksheetPath = $this->TempDir . 'xl/worksheets/sheet' . $RealSheetIndex . '.xml';
+        $TempWorksheetPath = $this -> TempDir.'xl/worksheets/sheet'.$RealSheetIndex.'.xml';
 
-        if ($RealSheetIndex !== false && is_readable($TempWorksheetPath)) {
-            $this->WorksheetPath = $TempWorksheetPath;
+        if ($RealSheetIndex !== false && is_readable($TempWorksheetPath))
+        {
+            $this -> WorksheetPath = $TempWorksheetPath;
 
-            $this->rewind();
+            $this -> rewind();
             return true;
         }
 
@@ -396,38 +422,45 @@ class SpreadsheetReader_XLSX implements Iterator, Countable
      */
     private function PrepareSharedStringCache()
     {
-        while ($this->SharedStrings->read()) {
-            if ($this->SharedStrings->name == 'sst') {
-                $this->SharedStringCount = $this->SharedStrings->getAttribute('count');
+        while ($this -> SharedStrings -> read())
+        {
+            if ($this -> SharedStrings -> name == 'sst')
+            {
+                $this -> SharedStringCount = $this -> SharedStrings -> getAttribute('count');
                 break;
             }
         }
 
-        if (!$this->SharedStringCount || (self::SHARED_STRING_CACHE_LIMIT < $this->SharedStringCount && self::SHARED_STRING_CACHE_LIMIT !== null)) {
+        if (!$this -> SharedStringCount || (self::SHARED_STRING_CACHE_LIMIT < $this -> SharedStringCount && self::SHARED_STRING_CACHE_LIMIT !== null))
+        {
             return false;
         }
 
         $CacheIndex = 0;
         $CacheValue = '';
-        while ($this->SharedStrings->read()) {
-            switch ($this->SharedStrings->name) {
+        while ($this -> SharedStrings -> read())
+        {
+            switch ($this -> SharedStrings -> name)
+            {
                 case 'si':
-                    if ($this->SharedStrings->nodeType == XMLReader::END_ELEMENT) {
-                        $this->SharedStringCache[$CacheIndex] = $CacheValue;
+                    if ($this -> SharedStrings -> nodeType == XMLReader::END_ELEMENT)
+                    {
+                        $this -> SharedStringCache[$CacheIndex] = $CacheValue;
                         $CacheIndex++;
                         $CacheValue = '';
                     }
                     break;
                 case 't':
-                    if ($this->SharedStrings->nodeType == XMLReader::END_ELEMENT) {
+                    if ($this -> SharedStrings -> nodeType == XMLReader::END_ELEMENT)
+                    {
                         continue;
                     }
-                    $CacheValue .= $this->SharedStrings->readString();
+                    $CacheValue .= $this -> SharedStrings -> readString();
                     break;
             }
         }
 
-        $this->SharedStrings->close();
+        $this -> SharedStrings -> close();
         return true;
     }
 
@@ -440,71 +473,93 @@ class SpreadsheetReader_XLSX implements Iterator, Countable
      */
     private function GetSharedString($Index)
     {
-        if ((self::SHARED_STRING_CACHE_LIMIT === null || self::SHARED_STRING_CACHE_LIMIT > 0) && !empty($this->SharedStringCache)) {
-            if (isset($this->SharedStringCache[$Index])) {
-                return $this->SharedStringCache[$Index];
-            } else {
+        if ((self::SHARED_STRING_CACHE_LIMIT === null || self::SHARED_STRING_CACHE_LIMIT > 0) && !empty($this -> SharedStringCache))
+        {
+            if (isset($this -> SharedStringCache[$Index]))
+            {
+                return $this -> SharedStringCache[$Index];
+            }
+            else
+            {
                 return '';
             }
         }
 
         // If the desired index is before the current, rewind the XML
-        if ($this->SharedStringIndex > $Index) {
-            $this->SSOpen = false;
-            $this->SharedStrings->close();
-            $this->SharedStrings->open($this->SharedStringsPath);
-            $this->SharedStringIndex = 0;
-            $this->LastSharedStringValue = null;
-            $this->SSForwarded = false;
+        if ($this -> SharedStringIndex > $Index)
+        {
+            $this -> SSOpen = false;
+            $this -> SharedStrings -> close();
+            $this -> SharedStrings -> open($this -> SharedStringsPath);
+            $this -> SharedStringIndex = 0;
+            $this -> LastSharedStringValue = null;
+            $this -> SSForwarded = false;
         }
 
         // Finding the unique string count (if not already read)
-        if ($this->SharedStringIndex == 0 && !$this->SharedStringCount) {
-            while ($this->SharedStrings->read()) {
-                if ($this->SharedStrings->name == 'sst') {
-                    $this->SharedStringCount = $this->SharedStrings->getAttribute('uniqueCount');
+        if ($this -> SharedStringIndex == 0 && !$this -> SharedStringCount)
+        {
+            while ($this -> SharedStrings -> read())
+            {
+                if ($this -> SharedStrings -> name == 'sst')
+                {
+                    $this -> SharedStringCount = $this -> SharedStrings -> getAttribute('uniqueCount');
                     break;
                 }
             }
         }
 
         // If index of the desired string is larger than possible, don't even bother.
-        if ($this->SharedStringCount && ($Index >= $this->SharedStringCount)) {
+        if ($this -> SharedStringCount && ($Index >= $this -> SharedStringCount))
+        {
             return '';
         }
 
         // If an index with the same value as the last already fetched is requested
         // (any further traversing the tree would get us further away from the node)
-        if (($Index == $this->SharedStringIndex) && ($this->LastSharedStringValue !== null)) {
-            return $this->LastSharedStringValue;
+        if (($Index == $this -> SharedStringIndex) && ($this -> LastSharedStringValue !== null))
+        {
+            return $this -> LastSharedStringValue;
         }
 
         // Find the correct <si> node with the desired index
-        while ($this->SharedStringIndex <= $Index) {
+        while ($this -> SharedStringIndex <= $Index)
+        {
             // SSForwarded is set further to avoid double reading in case nodes are skipped.
-            if ($this->SSForwarded) {
-                $this->SSForwarded = false;
-            } else {
-                $ReadStatus = $this->SharedStrings->read();
-                if (!$ReadStatus) {
+            if ($this -> SSForwarded)
+            {
+                $this -> SSForwarded = false;
+            }
+            else
+            {
+                $ReadStatus = $this -> SharedStrings -> read();
+                if (!$ReadStatus)
+                {
                     break;
                 }
             }
 
-            if ($this->SharedStrings->name == 'si') {
-                if ($this->SharedStrings->nodeType == XMLReader::END_ELEMENT) {
-                    $this->SSOpen = false;
-                    $this->SharedStringIndex++;
-                } else {
-                    $this->SSOpen = true;
+            if ($this -> SharedStrings -> name == 'si')
+            {
+                if ($this -> SharedStrings -> nodeType == XMLReader::END_ELEMENT)
+                {
+                    $this -> SSOpen = false;
+                    $this -> SharedStringIndex++;
+                }
+                else
+                {
+                    $this -> SSOpen = true;
 
-                    if ($this->SharedStringIndex < $Index) {
-                        $this->SSOpen = false;
-                        $this->SharedStrings->next('si');
-                        $this->SSForwarded = true;
-                        $this->SharedStringIndex++;
+                    if ($this -> SharedStringIndex < $Index)
+                    {
+                        $this -> SSOpen = false;
+                        $this -> SharedStrings -> next('si');
+                        $this -> SSForwarded = true;
+                        $this -> SharedStringIndex++;
                         continue;
-                    } else {
+                    }
+                    else
+                    {
                         break;
                     }
                 }
@@ -514,19 +569,24 @@ class SpreadsheetReader_XLSX implements Iterator, Countable
         $Value = '';
 
         // Extract the value from the shared string
-        if ($this->SSOpen && ($this->SharedStringIndex == $Index)) {
-            while ($this->SharedStrings->read()) {
-                switch ($this->SharedStrings->name) {
+        if ($this -> SSOpen && ($this -> SharedStringIndex == $Index))
+        {
+            while ($this -> SharedStrings -> read())
+            {
+                switch ($this -> SharedStrings -> name)
+                {
                     case 't':
-                        if ($this->SharedStrings->nodeType == XMLReader::END_ELEMENT) {
+                        if ($this -> SharedStrings -> nodeType == XMLReader::END_ELEMENT)
+                        {
                             continue;
                         }
-                        $Value .= $this->SharedStrings->readString();
+                        $Value .= $this -> SharedStrings -> readString();
                         break;
                     case 'si':
-                        if ($this->SharedStrings->nodeType == XMLReader::END_ELEMENT) {
-                            $this->SSOpen = false;
-                            $this->SSForwarded = true;
+                        if ($this -> SharedStrings -> nodeType == XMLReader::END_ELEMENT)
+                        {
+                            $this -> SSOpen = false;
+                            $this -> SSForwarded = true;
                             break 2;
                         }
                         break;
@@ -534,8 +594,9 @@ class SpreadsheetReader_XLSX implements Iterator, Countable
             }
         }
 
-        if ($Value) {
-            $this->LastSharedStringValue = $Value;
+        if ($Value)
+        {
+            $this -> LastSharedStringValue = $Value;
         }
         return $Value;
     }
@@ -550,28 +611,35 @@ class SpreadsheetReader_XLSX implements Iterator, Countable
      */
     private function FormatValue($Value, $Index)
     {
-        if (!is_numeric($Value)) {
+        if (!is_numeric($Value))
+        {
             return $Value;
         }
 
-        if (isset($this->Styles[$Index]) && ($this->Styles[$Index] !== false)) {
-            $Index = $this->Styles[$Index];
-        } else {
+        if (isset($this -> Styles[$Index]) && ($this -> Styles[$Index] !== false))
+        {
+            $Index = $this -> Styles[$Index];
+        }
+        else
+        {
             return $Value;
         }
 
         // A special case for the "General" format
-        if ($Index == 0) {
-            return $this->GeneralFormat($Value);
+        if ($Index == 0)
+        {
+            return $this -> GeneralFormat($Value);
         }
 
         $Format = array();
 
-        if (isset($this->ParsedFormatCache[$Index])) {
-            $Format = $this->ParsedFormatCache[$Index];
+        if (isset($this -> ParsedFormatCache[$Index]))
+        {
+            $Format = $this -> ParsedFormatCache[$Index];
         }
 
-        if (!$Format) {
+        if (!$Format)
+        {
             $Format = array(
                 'Code' => false,
                 'Type' => false,
@@ -580,28 +648,37 @@ class SpreadsheetReader_XLSX implements Iterator, Countable
                 'Currency' => false
             );
 
-            if (isset(self::$BuiltinFormats[$Index])) {
+            if (isset(self::$BuiltinFormats[$Index]))
+            {
                 $Format['Code'] = self::$BuiltinFormats[$Index];
-            } elseif (isset($this->Formats[$Index])) {
-                $Format['Code'] = $this->Formats[$Index];
+            }
+            elseif (isset($this -> Formats[$Index]))
+            {
+                $Format['Code'] = $this -> Formats[$Index];
             }
 
             // Format code found, now parsing the format
-            if ($Format['Code']) {
+            if ($Format['Code'])
+            {
                 $Sections = explode(';', $Format['Code']);
                 $Format['Code'] = $Sections[0];
 
-                switch (count($Sections)) {
+                switch (count($Sections))
+                {
                     case 2:
-                        if ($Value < 0) {
+                        if ($Value < 0)
+                        {
                             $Format['Code'] = $Sections[1];
                         }
                         break;
                     case 3:
                     case 4:
-                        if ($Value < 0) {
+                        if ($Value < 0)
+                        {
                             $Format['Code'] = $Sections[1];
-                        } elseif ($Value == 0) {
+                        }
+                        elseif ($Value == 0)
+                        {
                             $Format['Code'] = $Sections[2];
                         }
                         break;
@@ -612,23 +689,33 @@ class SpreadsheetReader_XLSX implements Iterator, Countable
             $Format['Code'] = trim(preg_replace('{^\[[[:alpha:]]+\]}i', '', $Format['Code']));
 
             // Percentages
-            if (substr($Format['Code'], -1) == '%') {
+            if (substr($Format['Code'], -1) == '%')
+            {
                 $Format['Type'] = 'Percentage';
-            } elseif (preg_match('{^(\[\$[[:alpha:]]*-[0-9A-F]*\])*[hmsdy]}i', $Format['Code'])) {
+            }
+            elseif (preg_match('{^(\[\$[[:alpha:]]*-[0-9A-F]*\])*[hmsdy]}i', $Format['Code']))
+            {
                 $Format['Type'] = 'DateTime';
 
                 $Format['Code'] = trim(preg_replace('{^(\[\$[[:alpha:]]*-[0-9A-F]*\])}i', '', $Format['Code']));
                 $Format['Code'] = strtolower($Format['Code']);
 
                 $Format['Code'] = strtr($Format['Code'], self::$DateReplacements['All']);
-                if (strpos($Format['Code'], 'A') === false) {
+                if (strpos($Format['Code'], 'A') === false)
+                {
                     $Format['Code'] = strtr($Format['Code'], self::$DateReplacements['24H']);
-                } else {
+                }
+                else
+                {
                     $Format['Code'] = strtr($Format['Code'], self::$DateReplacements['12H']);
                 }
-            } elseif ($Format['Code'] == '[$EUR ]#,##0.00_-') {
+            }
+            elseif ($Format['Code'] == '[$EUR ]#,##0.00_-')
+            {
                 $Format['Type'] = 'Euro';
-            } else {
+            }
+            else
+            {
                 // Removing skipped characters
                 $Format['Code'] = preg_replace('{_.}', '', $Format['Code']);
                 // Removing unnecessary escaping
@@ -636,7 +723,8 @@ class SpreadsheetReader_XLSX implements Iterator, Countable
                 // Removing string quotes
                 $Format['Code'] = str_replace(array('"', '*'), '', $Format['Code']);
                 // Removing thousands separator
-                if (strpos($Format['Code'], '0,0') !== false || strpos($Format['Code'], '#,#') !== false) {
+                if (strpos($Format['Code'], '0,0') !== false || strpos($Format['Code'], '#,#') !== false)
+                {
                     $Format['Thousands'] = true;
                 }
                 $Format['Code'] = str_replace(array('0,0', '#,#'), array('00', '##'), $Format['Code']);
@@ -644,7 +732,8 @@ class SpreadsheetReader_XLSX implements Iterator, Countable
                 // Scaling (Commas indicate the power)
                 $Scale = 1;
                 $Matches = array();
-                if (preg_match('{(0|#)(,+)}', $Format['Code'], $Matches)) {
+                if (preg_match('{(0|#)(,+)}', $Format['Code'], $Matches))
+                {
                     $Scale = pow(1000, strlen($Matches[2]));
                     // Removing the commas
                     $Format['Code'] = preg_replace(array('{0,+}', '{#,+}'), array('0', '#'), $Format['Code']);
@@ -652,13 +741,17 @@ class SpreadsheetReader_XLSX implements Iterator, Countable
 
                 $Format['Scale'] = $Scale;
 
-                if (preg_match('{#?.*\?\/\?}', $Format['Code'])) {
+                if (preg_match('{#?.*\?\/\?}', $Format['Code']))
+                {
                     $Format['Type'] = 'Fraction';
-                } else {
+                }
+                else
+                {
                     $Format['Code'] = str_replace('#', '', $Format['Code']);
 
                     $Matches = array();
-                    if (preg_match('{(0+)(\.?)(0*)}', preg_replace('{\[[^\]]+\]}', '', $Format['Code']), $Matches)) {
+                    if (preg_match('{(0+)(\.?)(0*)}', preg_replace('{\[[^\]]+\]}', '', $Format['Code']), $Matches))
+                    {
                         $Integer = $Matches[1];
                         $DecimalPoint = $Matches[2];
                         $Decimals = $Matches[3];
@@ -666,20 +759,23 @@ class SpreadsheetReader_XLSX implements Iterator, Countable
                         $Format['MinWidth'] = strlen($Integer) + strlen($DecimalPoint) + strlen($Decimals);
                         $Format['Decimals'] = $Decimals;
                         $Format['Precision'] = strlen($Format['Decimals']);
-                        $Format['Pattern'] = '%0' . $Format['MinWidth'] . '.' . $Format['Precision'] . 'f';
+                        $Format['Pattern'] = '%0'.$Format['MinWidth'].'.'.$Format['Precision'].'f';
                     }
                 }
 
                 $Matches = array();
-                if (preg_match('{\[\$(.*)\]}u', $Format['Code'], $Matches)) {
+                if (preg_match('{\[\$(.*)\]}u', $Format['Code'], $Matches))
+                {
                     $CurrFormat = $Matches[0];
                     $CurrCode = $Matches[1];
                     $CurrCode = explode('-', $CurrCode);
-                    if ($CurrCode) {
+                    if ($CurrCode)
+                    {
                         $CurrCode = $CurrCode[0];
                     }
 
-                    if (!$CurrCode) {
+                    if (!$CurrCode)
+                    {
                         $CurrCode = self::$CurrencyCode;
                     }
 
@@ -688,91 +784,122 @@ class SpreadsheetReader_XLSX implements Iterator, Countable
                 $Format['Code'] = trim($Format['Code']);
             }
 
-            $this->ParsedFormatCache[$Index] = $Format;
+            $this -> ParsedFormatCache[$Index] = $Format;
         }
 
         // Applying format to value
-        if ($Format) {
-            if ($Format['Code'] == '@') {
+        if ($Format)
+        {
+            if ($Format['Code'] == '@')
+            {
                 return (string)$Value;
-            } // Percentages
-            elseif ($Format['Type'] == 'Percentage') {
-                if ($Format['Code'] === '0%') {
-                    $Value = round(100 * $Value, 0) . '%';
-                } else {
+            }
+            // Percentages
+            elseif ($Format['Type'] == 'Percentage')
+            {
+                if ($Format['Code'] === '0%')
+                {
+                    $Value = round(100 * $Value, 0).'%';
+                }
+                else
+                {
                     $Value = sprintf('%.2f%%', round(100 * $Value, 2));
                 }
-            } // Dates and times
-            elseif ($Format['Type'] == 'DateTime') {
+            }
+            // Dates and times
+            elseif ($Format['Type'] == 'DateTime')
+            {
                 $Days = (int)$Value;
                 // Correcting for Feb 29, 1900
-                if ($Days > 60) {
+                if ($Days > 60)
+                {
                     $Days--;
                 }
 
                 // At this point time is a fraction of a day
                 $Time = ($Value - (int)$Value);
                 $Seconds = 0;
-                if ($Time) {
+                if ($Time)
+                {
                     // Here time is converted to seconds
                     // Some loss of precision will occur
                     $Seconds = (int)($Time * 86400);
                 }
 
                 $Value = clone self::$BaseDate;
-                $Value->add(new DateInterval('P' . $Days . 'D' . ($Seconds ? 'T' . $Seconds . 'S' : '')));
+                $Value -> add(new DateInterval('P'.$Days.'D'.($Seconds ? 'T'.$Seconds.'S' : '')));
 
-                if (!$this->Options['ReturnDateTimeObjects']) {
-                    $Value = $Value->format($Format['Code']);
-                } else {
+                if (!$this -> Options['ReturnDateTimeObjects'])
+                {
+                    $Value = $Value -> format($Format['Code']);
+                }
+                else
+                {
                     // A DateTime object is returned
                 }
-            } elseif ($Format['Type'] == 'Euro') {
-                $Value = 'EUR ' . sprintf('%1.2f', $Value);
-            } else {
+            }
+            elseif ($Format['Type'] == 'Euro')
+            {
+                $Value = 'EUR '.sprintf('%1.2f', $Value);
+            }
+            else
+            {
                 // Fractional numbers
-                if ($Format['Type'] == 'Fraction' && ($Value != (int)$Value)) {
+                if ($Format['Type'] == 'Fraction' && ($Value != (int)$Value))
+                {
                     $Integer = floor(abs($Value));
                     $Decimal = fmod(abs($Value), 1);
                     // Removing the integer part and decimal point
                     $Decimal *= pow(10, strlen($Decimal) - 2);
                     $DecimalDivisor = pow(10, strlen($Decimal));
 
-                    if (self::$RuntimeInfo['GMPSupported']) {
+                    if (self::$RuntimeInfo['GMPSupported'])
+                    {
                         $GCD = gmp_strval(gmp_gcd($Decimal, $DecimalDivisor));
-                    } else {
+                    }
+                    else
+                    {
                         $GCD = self::GCD($Decimal, $DecimalDivisor);
                     }
 
-                    $AdjDecimal = $DecimalPart / $GCD;
-                    $AdjDecimalDivisor = $DecimalDivisor / $GCD;
+                    $AdjDecimal = $DecimalPart/$GCD;
+                    $AdjDecimalDivisor = $DecimalDivisor/$GCD;
 
                     if (
                         strpos($Format['Code'], '0') !== false ||
                         strpos($Format['Code'], '#') !== false ||
                         substr($Format['Code'], 0, 3) == '? ?'
-                    ) {
+                    )
+                    {
                         // The integer part is shown separately apart from the fraction
-                        $Value = ($Value < 0 ? '-' : '') .
-                        $Integer ? $Integer . ' ' : '' .
-                            $AdjDecimal . '/' .
-                            $AdjDecimalDivisor;
-                    } else {
-                        // The fraction includes the integer part
-                        $AdjDecimal += $Integer * $AdjDecimalDivisor;
-                        $Value = ($Value < 0 ? '-' : '') .
-                            $AdjDecimal . '/' .
+                        $Value = ($Value < 0 ? '-' : '').
+                        $Integer ? $Integer.' ' : ''.
+                            $AdjDecimal.'/'.
                             $AdjDecimalDivisor;
                     }
-                } else {
+                    else
+                    {
+                        // The fraction includes the integer part
+                        $AdjDecimal += $Integer * $AdjDecimalDivisor;
+                        $Value = ($Value < 0 ? '-' : '').
+                            $AdjDecimal.'/'.
+                            $AdjDecimalDivisor;
+                    }
+                }
+                else
+                {
                     // Scaling
                     $Value = $Value / $Format['Scale'];
 
-                    if (!empty($Format['MinWidth']) && $Format['Decimals']) {
-                        if ($Format['Thousands']) {
+                    if (!empty($Format['MinWidth']) && $Format['Decimals'])
+                    {
+                        if ($Format['Thousands'])
+                        {
                             $Value = number_format($Value, $Format['Precision'],
                                 self::$DecimalSeparator, self::$ThousandSeparator);
-                        } else {
+                        }
+                        else
+                        {
                             $Value = sprintf($Format['Pattern'], $Value);
                         }
 
@@ -781,7 +908,8 @@ class SpreadsheetReader_XLSX implements Iterator, Countable
                 }
 
                 // Currency/Accounting
-                if ($Format['Currency']) {
+                if ($Format['Currency'])
+                {
                     $Value = preg_replace('', $Format['Currency'], $Value);
                 }
             }
@@ -801,14 +929,14 @@ class SpreadsheetReader_XLSX implements Iterator, Countable
     public function GeneralFormat($Value)
     {
         // Numeric format
-        if (is_numeric($Value)) {
+        if (is_numeric($Value))
+        {
             $Value = (float)$Value;
         }
         return $Value;
     }
 
     // !Iterator interface methods
-
     /**
      * Rewind the Iterator to the first element.
      * Similar to the reset() function for arrays in PHP
@@ -819,18 +947,21 @@ class SpreadsheetReader_XLSX implements Iterator, Countable
 
         // If the worksheet was already iterated, XML file is reopened.
         // Otherwise it should be at the beginning anyway
-        if ($this->Worksheet instanceof XMLReader) {
-            $this->Worksheet->close();
-        } else {
-            $this->Worksheet = new XMLReader;
+        if ($this -> Worksheet instanceof XMLReader)
+        {
+            $this -> Worksheet -> close();
+        }
+        else
+        {
+            $this -> Worksheet = new XMLReader;
         }
 
-        $this->Worksheet->open($this->WorksheetPath);
+        $this -> Worksheet -> open($this -> WorksheetPath);
 
-        $this->Valid = true;
-        $this->RowOpen = false;
-        $this->CurrentRow = false;
-        $this->Index = 0;
+        $this -> Valid = true;
+        $this -> RowOpen = false;
+        $this -> CurrentRow = false;
+        $this -> Index = 0;
     }
 
     /**
@@ -841,11 +972,12 @@ class SpreadsheetReader_XLSX implements Iterator, Countable
      */
     public function current()
     {
-        if ($this->Index == 0 && $this->CurrentRow === false) {
-            $this->next();
-            $this->Index--;
+        if ($this -> Index == 0 && $this -> CurrentRow === false)
+        {
+            $this -> next();
+            $this -> Index--;
         }
-        return $this->CurrentRow;
+        return $this -> CurrentRow;
     }
 
     /**
@@ -854,75 +986,91 @@ class SpreadsheetReader_XLSX implements Iterator, Countable
      */
     public function next()
     {
-        $this->Index++;
+        $this -> Index++;
 
-        $this->CurrentRow = array();
+        $this -> CurrentRow = array();
 
-        if (!$this->RowOpen) {
-            while ($this->Valid = $this->Worksheet->read()) {
-                if ($this->Worksheet->name == 'row') {
+        if (!$this -> RowOpen)
+        {
+            while ($this -> Valid = $this -> Worksheet -> read())
+            {
+                if ($this -> Worksheet -> name == 'row')
+                {
                     // Getting the row spanning area (stored as e.g., 1:12)
                     // so that the last cells will be present, even if empty
-                    $RowSpans = $this->Worksheet->getAttribute('spans');
-                    if ($RowSpans) {
+                    $RowSpans = $this -> Worksheet -> getAttribute('spans');
+                    if ($RowSpans)
+                    {
                         $RowSpans = explode(':', $RowSpans);
                         $CurrentRowColumnCount = $RowSpans[1];
-                    } else {
+                    }
+                    else
+                    {
                         $CurrentRowColumnCount = 0;
                     }
 
-                    if ($CurrentRowColumnCount > 0) {
-                        $this->CurrentRow = array_fill(0, $CurrentRowColumnCount, '');
+                    if ($CurrentRowColumnCount > 0)
+                    {
+                        $this -> CurrentRow = array_fill(0, $CurrentRowColumnCount, '');
                     }
 
-                    $this->RowOpen = true;
+                    $this -> RowOpen = true;
                     break;
                 }
             }
         }
 
         // Reading the necessary row, if found
-        if ($this->RowOpen) {
+        if ($this -> RowOpen)
+        {
             // These two are needed to control for empty cells
             $MaxIndex = 0;
             $CellCount = 0;
 
             $CellHasSharedString = false;
 
-            while ($this->Valid = $this->Worksheet->read()) {
-                switch ($this->Worksheet->name) {
+            while ($this -> Valid = $this -> Worksheet -> read())
+            {
+                switch ($this -> Worksheet -> name)
+                {
                     // End of row
                     case 'row':
-                        if ($this->Worksheet->nodeType == XMLReader::END_ELEMENT) {
-                            $this->RowOpen = false;
+                        if ($this -> Worksheet -> nodeType == XMLReader::END_ELEMENT)
+                        {
+                            $this -> RowOpen = false;
                             break 2;
                         }
                         break;
                     // Cell
                     case 'c':
                         // If it is a closing tag, skip it
-                        if ($this->Worksheet->nodeType == XMLReader::END_ELEMENT) {
+                        if ($this -> Worksheet -> nodeType == XMLReader::END_ELEMENT)
+                        {
                             continue;
                         }
 
-                        $StyleId = (int)$this->Worksheet->getAttribute('s');
+                        $StyleId = (int)$this -> Worksheet -> getAttribute('s');
 
                         // Get the index of the cell
-                        $Index = $this->Worksheet->getAttribute('r');
+                        $Index = $this -> Worksheet -> getAttribute('r');
                         $Letter = preg_replace('{[^[:alpha:]]}S', '', $Index);
                         $Index = self::IndexFromColumnLetter($Letter);
 
                         // Determine cell type
-                        if ($this->Worksheet->getAttribute('t') == self::CELL_TYPE_SHARED_STR) {
+                        if ($this -> Worksheet -> getAttribute('t') == self::CELL_TYPE_SHARED_STR)
+                        {
                             $CellHasSharedString = true;
-                        } else {
+                        }
+                        else
+                        {
                             $CellHasSharedString = false;
                         }
 
-                        $this->CurrentRow[$Index] = '';
+                        $this -> CurrentRow[$Index] = '';
 
                         $CellCount++;
-                        if ($Index > $MaxIndex) {
+                        if ($Index > $MaxIndex)
+                        {
                             $MaxIndex = $Index;
                         }
 
@@ -930,37 +1078,43 @@ class SpreadsheetReader_XLSX implements Iterator, Countable
                     // Cell value
                     case 'v':
                     case 'is':
-                        if ($this->Worksheet->nodeType == XMLReader::END_ELEMENT) {
+                        if ($this -> Worksheet -> nodeType == XMLReader::END_ELEMENT)
+                        {
                             continue;
                         }
 
-                        $Value = $this->Worksheet->readString();
+                        $Value = $this -> Worksheet -> readString();
 
-                        if ($CellHasSharedString) {
-                            $Value = $this->GetSharedString($Value);
+                        if ($CellHasSharedString)
+                        {
+                            $Value = $this -> GetSharedString($Value);
                         }
 
                         // Format value if necessary
-                        if ($Value !== '' && $StyleId && isset($this->Styles[$StyleId])) {
-                            $Value = $this->FormatValue($Value, $StyleId);
-                        } elseif ($Value) {
-                            $Value = $this->GeneralFormat($Value);
+                        if ($Value !== '' && $StyleId && isset($this -> Styles[$StyleId]))
+                        {
+                            $Value = $this -> FormatValue($Value, $StyleId);
+                        }
+                        elseif ($Value)
+                        {
+                            $Value = $this -> GeneralFormat($Value);
                         }
 
-                        $this->CurrentRow[$Index] = $Value;
+                        $this -> CurrentRow[$Index] = $Value;
                         break;
                 }
             }
 
             // Adding empty cells, if necessary
             // Only empty cells inbetween and on the left side are added
-            if ($MaxIndex + 1 > $CellCount) {
-                $this->CurrentRow = $this->CurrentRow + array_fill(0, $MaxIndex + 1, '');
-                ksort($this->CurrentRow);
+            if ($MaxIndex + 1 > $CellCount)
+            {
+                $this -> CurrentRow = $this -> CurrentRow + array_fill(0, $MaxIndex + 1, '');
+                ksort($this -> CurrentRow);
             }
         }
 
-        return $this->CurrentRow;
+        return $this -> CurrentRow;
     }
 
     /**
@@ -971,7 +1125,7 @@ class SpreadsheetReader_XLSX implements Iterator, Countable
      */
     public function key()
     {
-        return $this->Index;
+        return $this -> Index;
     }
 
     /**
@@ -982,18 +1136,17 @@ class SpreadsheetReader_XLSX implements Iterator, Countable
      */
     public function valid()
     {
-        return $this->Valid;
+        return $this -> Valid;
     }
 
     // !Countable interface method
-
     /**
      * Ostensibly should return the count of the contained items but this just returns the number
      * of rows read so far. It's not really correct but at least coherent.
      */
     public function count()
     {
-        return $this->Index + 1;
+        return $this -> Index + 1;
     }
 
     /**
@@ -1010,9 +1163,11 @@ class SpreadsheetReader_XLSX implements Iterator, Countable
         $Letter = strtoupper($Letter);
 
         $Result = 0;
-        for ($i = strlen($Letter) - 1, $j = 0; $i >= 0; $i--, $j++) {
+        for ($i = strlen($Letter) - 1, $j = 0; $i >= 0; $i--, $j++)
+        {
             $Ord = ord($Letter[$i]) - 64;
-            if ($Ord > 26) {
+            if ($Ord > 26)
+            {
                 // Something is very, very wrong
                 return false;
             }
@@ -1023,7 +1178,7 @@ class SpreadsheetReader_XLSX implements Iterator, Countable
 
     /**
      * Helper function for greatest common divisor calculation in case GMP extension is
-     *    not enabled
+     *	not enabled
      *
      * @param int Number #1
      * @param int Number #2
@@ -1034,12 +1189,16 @@ class SpreadsheetReader_XLSX implements Iterator, Countable
     {
         $A = abs($A);
         $B = abs($B);
-        if ($A + $B == 0) {
+        if ($A + $B == 0)
+        {
             return 0;
-        } else {
+        }
+        else
+        {
             $C = 1;
 
-            while ($A > 0) {
+            while ($A > 0)
+            {
                 $C = $A;
                 $A = $B % $A;
                 $B = $C;
@@ -1049,5 +1208,4 @@ class SpreadsheetReader_XLSX implements Iterator, Countable
         }
     }
 }
-
 ?>

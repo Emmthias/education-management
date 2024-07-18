@@ -1,8 +1,5 @@
 <?php
-
-use src\admin\assets\vendor\fpdf\FPDF;
-
-include '../../database/config.php';
+    include '../../database/config.php';
     include "../assets/vendor/fpdf/fpdf.php";
 
     session_start();

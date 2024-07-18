@@ -1,6 +1,9 @@
 <?php
-	if(isset($_SESSION['test_ongoing']))
+echo $_SESSION;
+if(isset($_SESSION['test_ongoing']))
 		header("Location: files/quiz.php");
+
+    include 'database/config.php';
 ?>
 
 <html>

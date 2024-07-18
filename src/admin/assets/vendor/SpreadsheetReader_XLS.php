@@ -1,8 +1,4 @@
 <?php
-
-namespace src\admin\assets\vendor;
-use Spreadsheet_Excel_Reader;
-
 /**
  * Class for parsing XLS files
  *
@@ -13,7 +9,8 @@ class SpreadsheetReader_XLS implements Iterator, Countable
     /**
      * @var array Options array, pre-populated with the default values.
      */
-    private $Options = array();
+    private $Options = array(
+    );
 
     /**
      * @var resource File handle
@@ -51,7 +48,7 @@ class SpreadsheetReader_XLS implements Iterator, Countable
 
     /**
      * @var array Template to use for empty rows. Retrieved rows are merged
-     *    with this so that empty cells are added, too
+     *	with this so that empty cells are added, too
      */
     private $EmptyRow = array();
 
@@ -61,31 +58,35 @@ class SpreadsheetReader_XLS implements Iterator, Countable
      */
     public function __construct($Filepath, array $Options = null)
     {
-        if (!is_readable($Filepath)) {
-            throw new Exception('SpreadsheetReader_XLS: File not readable (' . $Filepath . ')');
+        if (!is_readable($Filepath))
+        {
+            throw new Exception('SpreadsheetReader_XLS: File not readable ('.$Filepath.')');
         }
 
-        if (!class_exists('Spreadsheet_Excel_Reader')) {
+        if (!class_exists('Spreadsheet_Excel_Reader'))
+        {
             throw new Exception('SpreadsheetReader_XLS: Spreadsheet_Excel_Reader class not available');
         }
 
-        $this->Handle = new Spreadsheet_Excel_Reader($Filepath, false, 'UTF-8');
+        $this -> Handle = new Spreadsheet_Excel_Reader($Filepath, false, 'UTF-8');
 
-        if (function_exists('mb_convert_encoding')) {
-            $this->Handle->setUTFEncoder('mb');
+        if (function_exists('mb_convert_encoding'))
+        {
+            $this -> Handle -> setUTFEncoder('mb');
         }
 
-        if (empty($this->Handle->sheets)) {
-            $this->Error = true;
+        if (empty($this -> Handle -> sheets))
+        {
+            $this -> Error = true;
             return null;
         }
 
-        $this->ChangeSheet(0);
+        $this -> ChangeSheet(0);
     }
 
     public function __destruct()
     {
-        unset($this->Handle);
+        unset($this -> Handle);
     }
 
     /**
@@ -95,15 +96,17 @@ class SpreadsheetReader_XLS implements Iterator, Countable
      */
     public function Sheets()
     {
-        if ($this->Sheets === false) {
-            $this->Sheets = array();
-            $this->SheetIndexes = array_keys($this->Handle->sheets);
+        if ($this -> Sheets === false)
+        {
+            $this -> Sheets = array();
+            $this -> SheetIndexes = array_keys($this -> Handle -> sheets);
 
-            foreach ($this->SheetIndexes as $SheetIndex) {
-                $this->Sheets[] = $this->Handle->boundsheets[$SheetIndex]['name'];
+            foreach ($this -> SheetIndexes as $SheetIndex)
+            {
+                $this -> Sheets[] = $this -> Handle -> boundsheets[$SheetIndex]['name'];
             }
         }
-        return $this->Sheets;
+        return $this -> Sheets;
     }
 
     /**
@@ -116,25 +119,30 @@ class SpreadsheetReader_XLS implements Iterator, Countable
     public function ChangeSheet($Index)
     {
         $Index = (int)$Index;
-        $Sheets = $this->Sheets();
+        $Sheets = $this -> Sheets();
 
-        if (isset($this->Sheets[$Index])) {
-            $this->rewind();
-            $this->CurrentSheet = $this->SheetIndexes[$Index];
+        if (isset($this -> Sheets[$Index]))
+        {
+            $this -> rewind();
+            $this -> CurrentSheet = $this -> SheetIndexes[$Index];
 
-            $this->ColumnCount = $this->Handle->sheets[$this->CurrentSheet]['numCols'];
-            $this->RowCount = $this->Handle->sheets[$this->CurrentSheet]['numRows'];
+            $this -> ColumnCount = $this -> Handle -> sheets[$this -> CurrentSheet]['numCols'];
+            $this -> RowCount = $this -> Handle -> sheets[$this -> CurrentSheet]['numRows'];
 
             // For the case when Spreadsheet_Excel_Reader doesn't have the row count set correctly.
-            if (!$this->RowCount && count($this->Handle->sheets[$this->CurrentSheet]['cells'])) {
-                end($this->Handle->sheets[$this->CurrentSheet]['cells']);
-                $this->RowCount = (int)key($this->Handle->sheets[$this->CurrentSheet]['cells']);
+            if (!$this -> RowCount && count($this -> Handle -> sheets[$this -> CurrentSheet]['cells']))
+            {
+                end($this -> Handle -> sheets[$this -> CurrentSheet]['cells']);
+                $this -> RowCount = (int)key($this -> Handle -> sheets[$this -> CurrentSheet]['cells']);
             }
 
-            if ($this->ColumnCount) {
-                $this->EmptyRow = array_fill(1, $this->ColumnCount, '');
-            } else {
-                $this->EmptyRow = array();
+            if ($this -> ColumnCount)
+            {
+                $this -> EmptyRow = array_fill(1, $this -> ColumnCount, '');
+            }
+            else
+            {
+                $this -> EmptyRow = array();
             }
         }
 
@@ -143,23 +151,23 @@ class SpreadsheetReader_XLS implements Iterator, Countable
 
     public function __get($Name)
     {
-        switch ($Name) {
+        switch ($Name)
+        {
             case 'Error':
-                return $this->Error;
+                return $this -> Error;
                 break;
         }
         return null;
     }
 
     // !Iterator interface methods
-
     /**
      * Rewind the Iterator to the first element.
      * Similar to the reset() function for arrays in PHP
      */
     public function rewind()
     {
-        $this->Index = 0;
+        $this -> Index = 0;
     }
 
     /**
@@ -170,11 +178,12 @@ class SpreadsheetReader_XLS implements Iterator, Countable
      */
     public function current()
     {
-        if ($this->Index == 0) {
-            $this->next();
+        if ($this -> Index == 0)
+        {
+            $this -> next();
         }
 
-        return $this->CurrentRow;
+        return $this -> CurrentRow;
     }
 
     /**
@@ -186,24 +195,30 @@ class SpreadsheetReader_XLS implements Iterator, Countable
         // Internal counter is advanced here instead of the if statement
         //	because apparently it's fully possible that an empty row will not be
         //	present at all
-        $this->Index++;
+        $this -> Index++;
 
-        if ($this->Error) {
+        if ($this -> Error)
+        {
             return array();
-        } elseif (isset($this->Handle->sheets[$this->CurrentSheet]['cells'][$this->Index])) {
-            $this->CurrentRow = $this->Handle->sheets[$this->CurrentSheet]['cells'][$this->Index];
-            if (!$this->CurrentRow) {
+        }
+        elseif (isset($this -> Handle -> sheets[$this -> CurrentSheet]['cells'][$this -> Index]))
+        {
+            $this -> CurrentRow = $this -> Handle -> sheets[$this -> CurrentSheet]['cells'][$this -> Index];
+            if (!$this -> CurrentRow)
+            {
                 return array();
             }
 
-            $this->CurrentRow = $this->CurrentRow + $this->EmptyRow;
-            ksort($this->CurrentRow);
+            $this -> CurrentRow = $this -> CurrentRow + $this -> EmptyRow;
+            ksort($this -> CurrentRow);
 
-            $this->CurrentRow = array_values($this->CurrentRow);
-            return $this->CurrentRow;
-        } else {
-            $this->CurrentRow = $this->EmptyRow;
-            return $this->CurrentRow;
+            $this -> CurrentRow = array_values($this -> CurrentRow);
+            return $this -> CurrentRow;
+        }
+        else
+        {
+            $this -> CurrentRow = $this -> EmptyRow;
+            return $this -> CurrentRow;
         }
     }
 
@@ -215,7 +230,7 @@ class SpreadsheetReader_XLS implements Iterator, Countable
      */
     public function key()
     {
-        return $this->Index;
+        return $this -> Index;
     }
 
     /**
@@ -226,26 +241,26 @@ class SpreadsheetReader_XLS implements Iterator, Countable
      */
     public function valid()
     {
-        if ($this->Error) {
+        if ($this -> Error)
+        {
             return false;
         }
-        return ($this->Index <= $this->RowCount);
+        return ($this -> Index <= $this -> RowCount);
     }
 
     // !Countable interface method
-
     /**
      * Ostensibly should return the count of the contained items but this just returns the number
      * of rows read so far. It's not really correct but at least coherent.
      */
     public function count()
     {
-        if ($this->Error) {
+        if ($this -> Error)
+        {
             return 0;
         }
 
-        return $this->RowCount;
+        return $this -> RowCount;
     }
 }
-
 ?>

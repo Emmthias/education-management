@@ -1,14 +1,4 @@
 <?php
-
-namespace src\admin\assets\vendor;
-
-use SpreadsheetReader_;
-use src\admin\assets\vendor\SpreadsheetReader_CSV;
-use src\admin\assets\vendor\SpreadsheetReader_ODS;
-use src\admin\assets\vendor\SpreadsheetReader_XLS;
-use src\admin\assets\vendor\SpreadsheetReader_XLSX;
-use TYPE_;
-
 /**
  * Main class for spreadsheet reading
  *
@@ -49,38 +39,44 @@ class SpreadsheetReader implements SeekableIterator, Countable
      */
     public function __construct($Filepath, $OriginalFilename = false, $MimeType = false)
     {
-        if (!is_readable($Filepath)) {
-            throw new Exception('SpreadsheetReader: File (' . $Filepath . ') not readable');
+        if (!is_readable($Filepath))
+        {
+            throw new Exception('SpreadsheetReader: File ('.$Filepath.') not readable');
         }
 
         // To avoid timezone warnings and exceptions for formatting dates retrieved from files
         $DefaultTZ = @date_default_timezone_get();
-        if ($DefaultTZ) {
+        if ($DefaultTZ)
+        {
             date_default_timezone_set($DefaultTZ);
         }
 
         // Checking the other parameters for correctness
 
         // This should be a check for string but we're lenient
-        if (!empty($OriginalFilename) && !is_scalar($OriginalFilename)) {
+        if (!empty($OriginalFilename) && !is_scalar($OriginalFilename))
+        {
             throw new Exception('SpreadsheetReader: Original file (2nd parameter) path is not a string or a scalar value.');
         }
-        if (!empty($MimeType) && !is_scalar($MimeType)) {
+        if (!empty($MimeType) && !is_scalar($MimeType))
+        {
             throw new Exception('SpreadsheetReader: Mime type (3nd parameter) path is not a string or a scalar value.');
         }
 
         // 1. Determine type
-        if (!$OriginalFilename) {
+        if (!$OriginalFilename)
+        {
             $OriginalFilename = $Filepath;
         }
 
         $Extension = strtolower(pathinfo($OriginalFilename, PATHINFO_EXTENSION));
 
-        switch ($MimeType) {
+        switch ($MimeType)
+        {
             case 'text/csv':
             case 'text/comma-separated-values':
             case 'text/plain':
-                $this->Type = self::TYPE_CSV;
+                $this -> Type = self::TYPE_CSV;
                 break;
             case 'application/vnd.ms-excel':
             case 'application/msexcel':
@@ -93,81 +89,92 @@ class SpreadsheetReader implements SeekableIterator, Countable
             case 'application/xlt':
             case 'application/x-xls':
                 // Excel does weird stuff
-                if (in_array($Extension, array('csv', 'tsv', 'txt'))) {
-                    $this->Type = self::TYPE_CSV;
-                } else {
-                    $this->Type = self::TYPE_XLS;
+                if (in_array($Extension, array('csv', 'tsv', 'txt')))
+                {
+                    $this -> Type = self::TYPE_CSV;
+                }
+                else
+                {
+                    $this -> Type = self::TYPE_XLS;
                 }
                 break;
             case 'application/vnd.oasis.opendocument.spreadsheet':
             case 'application/vnd.oasis.opendocument.spreadsheet-template':
-                $this->Type = self::TYPE_ODS;
+                $this -> Type = self::TYPE_ODS;
                 break;
             case 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet':
             case 'application/vnd.openxmlformats-officedocument.spreadsheetml.template':
             case 'application/xlsx':
             case 'application/xltx':
-                $this->Type = self::TYPE_XLSX;
+                $this -> Type = self::TYPE_XLSX;
                 break;
             case 'application/xml':
                 // Excel 2004 xml format uses this
                 break;
         }
 
-        if (!$this->Type) {
-            switch ($Extension) {
+        if (!$this -> Type)
+        {
+            switch ($Extension)
+            {
                 case 'xlsx':
                 case 'xltx': // XLSX template
                 case 'xlsm': // Macro-enabled XLSX
                 case 'xltm': // Macro-enabled XLSX template
-                    $this->Type = self::TYPE_XLSX;
+                    $this -> Type = self::TYPE_XLSX;
                     break;
                 case 'xls':
                 case 'xlt':
-                    $this->Type = self::TYPE_XLS;
+                    $this -> Type = self::TYPE_XLS;
                     break;
                 case 'ods':
                 case 'odt':
-                    $this->Type = self::TYPE_ODS;
+                    $this -> Type = self::TYPE_ODS;
                     break;
                 default:
-                    $this->Type = self::TYPE_CSV;
+                    $this -> Type = self::TYPE_CSV;
                     break;
             }
         }
 
         // Pre-checking XLS files, in case they are renamed CSV or XLSX files
-        if ($this->Type == self::TYPE_XLS) {
+        if ($this -> Type == self::TYPE_XLS)
+        {
             self::Load(self::TYPE_XLS);
-            $this->Handle = new SpreadsheetReader_XLS($Filepath);
-            if ($this->Handle->Error) {
-                $this->Handle->__destruct();
+            $this -> Handle = new SpreadsheetReader_XLS($Filepath);
+            if ($this -> Handle -> Error)
+            {
+                $this -> Handle -> __destruct();
 
-                if (is_resource($ZipHandle = zip_open($Filepath))) {
-                    $this->Type = self::TYPE_XLSX;
+                if (is_resource($ZipHandle = zip_open($Filepath)))
+                {
+                    $this -> Type = self::TYPE_XLSX;
                     zip_close($ZipHandle);
-                } else {
-                    $this->Type = self::TYPE_CSV;
+                }
+                else
+                {
+                    $this -> Type = self::TYPE_CSV;
                 }
             }
         }
 
         // 2. Create handle
-        switch ($this->Type) {
+        switch ($this -> Type)
+        {
             case self::TYPE_XLSX:
                 self::Load(self::TYPE_XLSX);
-                $this->Handle = new SpreadsheetReader_XLSX($Filepath);
+                $this -> Handle = new SpreadsheetReader_XLSX($Filepath);
                 break;
             case self::TYPE_CSV:
                 self::Load(self::TYPE_CSV);
-                $this->Handle = new SpreadsheetReader_CSV($Filepath, $this->Options);
+                $this -> Handle = new SpreadsheetReader_CSV($Filepath, $this -> Options);
                 break;
             case self::TYPE_XLS:
                 // Everything already happens above
                 break;
             case self::TYPE_ODS:
                 self::Load(self::TYPE_ODS);
-                $this->Handle = new SpreadsheetReader_ODS($Filepath, $this->Options);
+                $this -> Handle = new SpreadsheetReader_ODS($Filepath, $this -> Options);
                 break;
         }
     }
@@ -179,22 +186,22 @@ class SpreadsheetReader implements SeekableIterator, Countable
      */
     public function Sheets()
     {
-        return $this->Handle->Sheets();
+        return $this -> Handle -> Sheets();
     }
 
     /**
      * Changes the current sheet to another from the file.
-     *    Note that changing the sheet will rewind the file to the beginning, even if
-     *    the current sheet index is provided.
+     *	Note that changing the sheet will rewind the file to the beginning, even if
+     *	the current sheet index is provided.
      *
      * @param int Sheet index
      *
      * @return bool True if sheet could be changed to the specified one,
-     *    false if not (for example, if incorrect index was provided.
+     *	false if not (for example, if incorrect index was provided.
      */
     public function ChangeSheet($Index)
     {
-        return $this->Handle->ChangeSheet($Index);
+        return $this -> Handle -> ChangeSheet($Index);
     }
 
     /**
@@ -204,14 +211,16 @@ class SpreadsheetReader implements SeekableIterator, Countable
      */
     private static function Load($Type)
     {
-        if (!in_array($Type, array(self::TYPE_XLSX, self::TYPE_XLS, self::TYPE_CSV, self::TYPE_ODS))) {
-            throw new Exception('SpreadsheetReader: Invalid type (' . $Type . ')');
+        if (!in_array($Type, array(self::TYPE_XLSX, self::TYPE_XLS, self::TYPE_CSV, self::TYPE_ODS)))
+        {
+            throw new Exception('SpreadsheetReader: Invalid type ('.$Type.')');
         }
 
         // 2nd parameter is to prevent autoloading for the class.
         // If autoload works, the require line is unnecessary, if it doesn't, it ends badly.
-        if (!class_exists('SpreadsheetReader_' . $Type, false)) {
-            require(dirname(__FILE__) . DIRECTORY_SEPARATOR . 'SpreadsheetReader_' . $Type . '.php');
+        if (!class_exists('SpreadsheetReader_'.$Type, false))
+        {
+            require(dirname(__FILE__).DIRECTORY_SEPARATOR.'SpreadsheetReader_'.$Type.'.php');
         }
     }
 
@@ -223,9 +232,10 @@ class SpreadsheetReader implements SeekableIterator, Countable
      */
     public function rewind()
     {
-        $this->Index = 0;
-        if ($this->Handle) {
-            $this->Handle->rewind();
+        $this -> Index = 0;
+        if ($this -> Handle)
+        {
+            $this -> Handle -> rewind();
         }
     }
 
@@ -237,8 +247,9 @@ class SpreadsheetReader implements SeekableIterator, Countable
      */
     public function current()
     {
-        if ($this->Handle) {
-            return $this->Handle->current();
+        if ($this -> Handle)
+        {
+            return $this -> Handle -> current();
         }
         return null;
     }
@@ -249,10 +260,11 @@ class SpreadsheetReader implements SeekableIterator, Countable
      */
     public function next()
     {
-        if ($this->Handle) {
-            $this->Index++;
+        if ($this -> Handle)
+        {
+            $this -> Index++;
 
-            return $this->Handle->next();
+            return $this -> Handle -> next();
         }
         return null;
     }
@@ -265,8 +277,9 @@ class SpreadsheetReader implements SeekableIterator, Countable
      */
     public function key()
     {
-        if ($this->Handle) {
-            return $this->Handle->key();
+        if ($this -> Handle)
+        {
+            return $this -> Handle -> key();
         }
         return null;
     }
@@ -279,8 +292,9 @@ class SpreadsheetReader implements SeekableIterator, Countable
      */
     public function valid()
     {
-        if ($this->Handle) {
-            return $this->Handle->valid();
+        if ($this -> Handle)
+        {
+            return $this -> Handle -> valid();
         }
         return false;
     }
@@ -288,8 +302,9 @@ class SpreadsheetReader implements SeekableIterator, Countable
     // !Countable interface method
     public function count()
     {
-        if ($this->Handle) {
-            return $this->Handle->count();
+        if ($this -> Handle)
+        {
+            return $this -> Handle -> count();
         }
         return 0;
     }
@@ -302,28 +317,32 @@ class SpreadsheetReader implements SeekableIterator, Countable
      */
     public function seek($Position)
     {
-        if (!$this->Handle) {
+        if (!$this -> Handle)
+        {
             throw new OutOfBoundsException('SpreadsheetReader: No file opened');
         }
 
-        $CurrentIndex = $this->Handle->key();
+        $CurrentIndex = $this -> Handle -> key();
 
-        if ($CurrentIndex != $Position) {
-            if ($Position < $CurrentIndex || is_null($CurrentIndex) || $Position == 0) {
-                $this->rewind();
+        if ($CurrentIndex != $Position)
+        {
+            if ($Position < $CurrentIndex || is_null($CurrentIndex) || $Position == 0)
+            {
+                $this -> rewind();
             }
 
-            while ($this->Handle->valid() && ($Position > $this->Handle->key())) {
-                $this->Handle->next();
+            while ($this -> Handle -> valid() && ($Position > $this -> Handle -> key()))
+            {
+                $this -> Handle -> next();
             }
 
-            if (!$this->Handle->valid()) {
-                throw new OutOfBoundsException('SpreadsheetError: Position ' . $Position . ' not found');
+            if (!$this -> Handle -> valid())
+            {
+                throw new OutOfBoundsException('SpreadsheetError: Position '.$Position.' not found');
             }
         }
 
         return null;
     }
 }
-
 ?>
