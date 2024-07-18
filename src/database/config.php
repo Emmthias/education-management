@@ -1,8 +1,10 @@
 <?php
+global $conn;
 //database configurations
-define("DB_HOST","localhost");
-define("DB_UNAME","YOUR_DATABASE_USER_NAME");
-define("DB_PASS","YOUR_DATABASE_PASSWORD");
-define("DB_DNAME","YOUR_DATABASE_NAME");
+const DB_HOST = "db";
+const DB_UNAME = "jp";
+const DB_PASS = "test";
+const DB_DNAME = "quizller";
 $conn=mysqli_connect(DB_HOST,DB_UNAME,DB_PASS,DB_DNAME);
+
 ?>
