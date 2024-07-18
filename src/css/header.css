@@ -66,11 +66,6 @@ Input, textarea : 14px/1.6 '', Arial, sans-serif;
 }
 
 @font-face {
-  font-family: Linearicons;
-  src: url('../fonts/Linearicons-Free-v1.0.0/WebFont/Linearicons-Free.ttf'); 
-}
-
-@font-face {
   font-family: Poppins-Bold;
   src: url('../fonts/poppins/Poppins-Bold.ttf'); 
 }
@@ -1107,7 +1102,7 @@ li.sale-noti > a {
 
 .side-menu .sub-menu > li {
   padding-left: 12px;
-  padding-top: 
+  padding-top: 5px;
 }
 
 .side-menu .sub-menu a:hover {
