@@ -35,8 +35,9 @@ if(isset($_SESSION['test_ongoing']))
 			<div class="container-menu-header">
 				<div class="wrap_header">
 					<!-- Logo -->
+                    <img src="admin/assets/img/coedupro.png" alt="IMG-LOGO" style="width:200px">
 					<a href="index.php" class="logo">
-						<img src="images/icons/logo.png" alt="IMG-LOGO">
+
 					</a>
 
 					<!-- Header Icon -->
@@ -48,7 +49,7 @@ if(isset($_SESSION['test_ongoing']))
 			<div class="wrap_header_mobile">
 				<!-- Logo moblie -->
 				<a href="index.php" class="logo-mobile">
-					<img src="images/icons/logo.png" alt="IMG-LOGO">
+					<img src="admin/assets/img/coedupro.png" alt="IMG-LOGO">
 				</a>
 			</div>
 			</div>
@@ -56,6 +57,7 @@ if(isset($_SESSION['test_ongoing']))
 
 		<section>
 			<div class="limiter">
+
 				<div class="container-login100">
 					<div class="wrap-login100">
 						<div class="login100-pic js-tilt" data-tilt>
