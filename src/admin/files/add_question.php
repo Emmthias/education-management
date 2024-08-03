@@ -112,7 +112,7 @@ if(!isset($_SESSION["user_id"]))
                 <span class="navbar-toggler-bar bar3"></span>
               </button>
             </div>
-            <a class="navbar-brand" href="#pablo">Add New Question</a>
+            <a class="navbar-brand" href="#">Agregar Nueva Pregunta</a>
           </div>
           <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navigation" aria-controls="navigation-index" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-bar navbar-kebab"></span>
@@ -132,7 +132,7 @@ if(!isset($_SESSION["user_id"]))
           <div class="col-md-8">
             <div class="card">
               <div class="card-header">
-                <h5 class="title">Add New Question</h5>
+                <h5 class="title">Agregar Nueva Pregunta</h5>
               </div>
               <div class="card-body">
                 <form method="POST" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]);?>">
@@ -141,39 +141,39 @@ if(!isset($_SESSION["user_id"]))
                   <div class="row">
                     <div class="col-md-12">
                       <div class="form-group">
-                        <label>Question title</label>
-                          <input type="text" class="form-control" name="title" placeholder="Question title" required/>
+                        <label>Pregunta</label>
+                          <input type="text" class="form-control" name="title" placeholder="Pregunta" required/>
                       </div>
                       <div class="form-group">
-                        <label>Option (A)</label>
-                          <input type="text" class="form-control" name="op_a" placeholder="Option (A)" required/>
+                        <label>Opción (A)</label>
+                          <input type="text" class="form-control" name="op_a" placeholder="Opción (A)" required/>
                       </div>
                       <div class="form-group">
-                        <label>Option (B)</label>
-                          <input type="text" class="form-control" name="op_b" placeholder="Option (B)" required/>
+                        <label>Opción (B)</label>
+                          <input type="text" class="form-control" name="op_b" placeholder="Opción (B)" required/>
                       </div>
                       <div class="form-group">
-                        <label>Option (C)</label>
-                          <input type="text" class="form-control" name="op_c" placeholder="Option (C)" required/>
+                        <label>Opción (C)</label>
+                          <input type="text" class="form-control" name="op_c" placeholder="Opción (C)" required/>
                       </div>
                       <div class="form-group">
-                        <label>Option (D)</label>
-                          <input type="text" class="form-control" name="op_d" placeholder="Option (D)" required/>
+                        <label>Opción (D)</label>
+                          <input type="text" class="form-control" name="op_d" placeholder="Opción (D)" required/>
                       </div>
                       <div class="form-group">
-                        <label>Correct Option (A/B/C/D)</label>
-                          <input type="text" class="form-control" name="op_correct" placeholder="Correct Option" required/>
+                        <label>Opción Correcta (A/B/C/D)</label>
+                          <input type="text" class="form-control" name="op_correct" placeholder="Opción Correcta" required/>
                       </div>
                       <div class="form-group">
-                        <label>Score</label>
-                          <input type="text" class="form-control" name="score" placeholder="Score" required/>
+                        <label>Puntaje</label>
+                          <input type="text" class="form-control" name="score" placeholder="Puntaje" required/>
                       </div>
                     </div>
                   </div>
                   <div class="row center-element">
                     <div class="col-md-8">
                       <div class="form-group">
-                        <button class="btn btn-primary btn-block btn-round">ADD QUESTION</button>
+                        <button class="btn btn-primary btn-block btn-round">AGREGAR PREGUNTA</button>
                       </div>
                     </div>
                   </div>

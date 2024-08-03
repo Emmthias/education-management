@@ -104,7 +104,7 @@ if(isset($_POST['new_test'])) {
                 <span class="navbar-toggler-bar bar3"></span>
               </button>
             </div>
-            <a class="navbar-brand" href="#pablo">Dashboard Basic Settings</a>
+            <a class="navbar-brand" href="#">Dashboard Basic Settings</a>
           </div>
           <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navigation" aria-controls="navigation-index" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-bar navbar-kebab"></span>
@@ -124,7 +124,7 @@ if(isset($_POST['new_test'])) {
           <div class="col-md-8">
             <div class="card">
               <div class="card-header">
-                <h5 class="title">Create New Test</h5>
+                <h5 class="title">Crear Nuevo Examen</h5>
               </div>
               <div class="card-body">
                 <form method="POST" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]);?>">
@@ -132,26 +132,26 @@ if(isset($_POST['new_test'])) {
                   <div class="row">
                     <div class="col-md-12">
                       <div class="form-group">
-                        <label>Test name (title)</label>
-                          <input type="text" class="form-control" name="test_name" placeholder="Test name" required/>
+                        <label>Nombre del Examen</label>
+                          <input type="text" class="form-control" name="test_name" placeholder="Nombre Examen" required/>
                       </div>
                       <div class="form-group">
-                        <label>Subject name</label>
-                          <input type="text" class="form-control" name="subject_name" placeholder="Subject name" required/>
+                        <label>Nombre de la Materia</label>
+                          <input type="text" class="form-control" name="subject_name" placeholder="Nombre Materia" required/>
                       </div>
                       <div class="form-group">
-                        <label>Test date</label>
-                          <input type="date" class="form-control" name="test_date" placeholder="Test Date" required/>
+                        <label>Fecha del Examen</label>
+                          <input type="date" class="form-control" name="test_date" placeholder="Fecha del Examen" required/>
                       </div>
                       <div class="form-group">
-                        <label>Total Questions count</label>
-                          <input type="number" class="form-control" name="total_questions" placeholder="Total Questions count" required/>
+                        <label>Total de Preguntas</label>
+                          <input type="number" class="form-control" name="total_questions" placeholder="Total de Preguntas" required/>
                       </div>
                       <div class="form-group">
                         <div class="row">
                             <div class="col-md-6">
                                 <select id="options" name="test_status" class="btn-round" required style="width:100%;">
-                                  <option selected="true" value="" disabled="disabled">Select test status</option>
+                                  <option selected="true" value="" disabled="disabled">Selecciona el status</option>
                                   <?php
 
                                       $sql = "select * from status where id IN(1,2)";
@@ -168,7 +168,7 @@ if(isset($_POST['new_test'])) {
                             </div>
                             <div class="col-md-6">
                                 <select id="options" name="test_class" class="btn-round" required style="width:100%;">
-                                  <option selected="true" value="" disabled="disabled">Select class for test</option>
+                                  <option selected="true" value="" disabled="disabled">Selecciona la Materia</option>
                                   <?php
 
                                       $sql = "select * from classes";
@@ -190,7 +190,7 @@ if(isset($_POST['new_test'])) {
                   <div class="row center-element">
                     <div class="col-md-8">
                       <div class="form-group">
-                        <button class="btn btn-primary btn-block btn-round">CREATE TEST</button>
+                        <button class="btn btn-primary btn-block btn-round">CREAR EXAMEN</button>
                       </div>
                     </div>
                   </div>

@@ -83,7 +83,7 @@
                                                                         <p id="test_name"></p>
                                                                 </div>
                                                                 <div class="col-md-4">
-                                                                        <a href="quiz.php"><button type="button" class="btn btn-success" style="float:right;">Start Test</button></a>
+                                                                        <a href="quiz.php"><button type="button" class="btn btn-success" style="float:right;">Iniciar Examen</button></a>
                                                                 </div>
                                                             </div>
 

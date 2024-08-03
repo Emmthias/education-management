@@ -46,7 +46,7 @@ if(!isset($_SESSION["user_id"]))
                 <span class="navbar-toggler-bar bar3"></span>
               </button>
             </div>
-            <a class="navbar-brand" href="#pablo">Dashboard Basic Settings</a>
+            <a class="navbar-brand" href="#">Dashboard Basic Settings</a>
           </div>
           <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navigation" aria-controls="navigation-index" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-bar navbar-kebab"></span>
@@ -66,10 +66,10 @@ if(!isset($_SESSION["user_id"]))
               <div class="card-header">
                 <div class="row">
                   <div class="col-md-8">
-                    <h5 class="title">Pending Quiz Tests</h5>
+                    <h5 class="title">Exámenes Pendientes</h5>
                   </div>
                   <div class="col-md-4">
-                    <button class="btn btn-primary btn-block btn-round" onclick="redirect_to_new_test()" style="margin-top:0px;width:100px !important;float:right !important;">NEW</button>
+                    <button class="btn btn-primary btn-block btn-round" onclick="redirect_to_new_test()" style="margin-top:0px;width:100px !important;float:right !important;">NUEVO</button>
                   </div>
                 </div>  
               </div>
@@ -90,7 +90,7 @@ if(!isset($_SESSION["user_id"]))
                                     <p>Subject - <?= $row["subject"];?></p>
                                   </div>
                                   <div class="col-md-4"> 
-                                    <p style="text-align:right;">Date - <?= $row["date"];?></p>
+                                    <p style="text-align:right;">Fecha - <?= $row["date"];?></p>
                                   </div>
                                 </div>
                               </div>
@@ -103,7 +103,7 @@ if(!isset($_SESSION["user_id"]))
                       <div id="no-data">
                         <center>
                           <img src="../assets/img/no-data.svg" height="400" width="400"/>
-                          <center><h5>No Data</h5></center>
+                          <center><h5>Sin Datos</h5></center>
                         </center>
                       </div>
                       <?php

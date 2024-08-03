@@ -35,23 +35,23 @@ if(isset($_SESSION["user_id"]))
           <div class="col-md-4">
             <div class="card">
               <div class="card-header">
-                <center><h5 class="title">Login</h5></center>
+                <center><h5 class="title">Accesos</h5></center>
               </div>
               <div class="card-body">
                 <form id="login_form">
                   <div class="row">
                     <div class="col-md-12">
                       <div class="form-group">
-                        <label>Email</label>
-                        <input type="text" id="username" name="username" class="form-control" placeholder="Your username">
+                        <label>Usuario</label>
+                        <input type="text" id="username" name="username" class="form-control" placeholder="Usuario">
                       </div>
                     </div>
                   </div>
                    <div class="row">
                     <div class="col-md-12">
                       <div class="form-group">
-                        <label>Password</label>
-                        <input type="password" id="password" name="password" class="form-control" placeholder="Your Password" >
+                        <label>Contraseña</label>
+                        <input type="password" id="password" name="password" class="form-control" placeholder="Contraseña" >
                       </div>
                     </div>
                   </div>

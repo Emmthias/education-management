@@ -175,7 +175,7 @@ if(!isset($_SESSION["user_id"]))
                 <span class="navbar-toggler-bar bar3"></span>
               </button>
             </div>
-            <a class="navbar-brand" href="#pablo">Test Details</a>
+            <a class="navbar-brand" href="#">Test Details</a>
           </div>
           <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navigation" aria-controls="navigation-index" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-bar navbar-kebab"></span>
@@ -193,7 +193,7 @@ if(!isset($_SESSION["user_id"]))
           <div class="col-md-6">
             <div class="card">
               <div class="card-header">
-                <h5 class="title">General Settings</h5>
+                <h5 class="title">Configuración General</h5>
               </div>
               <div class="card-body">
                 <form method="POST" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]);?>">
@@ -202,20 +202,20 @@ if(!isset($_SESSION["user_id"]))
                   <div class="row">
                     <div class="col-md-12">
                       <div class="form-group">
-                        <label>Test name (title)</label>
-                        <input type="text" class="form-control" name="test_name" placeholder="Test name" value="<?= $test_details["name"];?>"/>
+                        <label>Nombre Examen</label>
+                        <input type="text" class="form-control" name="test_name" placeholder="Nombre Examen" value="<?= $test_details["name"];?>"/>
                       </div>
                       <div class="form-group">
-                        <label>Subject name</label>
-                        <input type="text" class="form-control" name="subject_name" placeholder="Subject name" value="<?= $test_details["subject"];?>"/>
+                        <label>Nombre Materia</label>
+                        <input type="text" class="form-control" name="subject_name" placeholder="Nombre Materia" value="<?= $test_details["subject"];?>"/>
                       </div>
                       <div class="form-group">
-                        <label>Test date</label>
-                          <input type="date" class="form-control" name="test_date" placeholder="Test Date" value="<?= $test_details["date"];?>" required/>
+                        <label>Fecha Examen</label>
+                          <input type="date" class="form-control" name="test_date" placeholder="Fecha Examen" value="<?= $test_details["date"];?>" required/>
                       </div>
                       <div class="form-group">
-                        <label>Total Questions count</label>
-                          <input type="number" class="form-control" name="total_questions" placeholder="Total Questions count" value="<?= $test_details["total_questions"];?>" required/>
+                        <label>Total de Preguntas</label>
+                          <input type="number" class="form-control" name="total_questions" placeholder="Total de Preguntas" value="<?= $test_details["total_questions"];?>" required/>
                       </div>
                       <div class="form-group">
                         <select id="options" name="test_status" class="btn-round" required style="width:100%;">
@@ -239,7 +239,7 @@ if(!isset($_SESSION["user_id"]))
                   <div class="row center-element">
                     <div class="col-md-8">
                       <div class="form-group">
-                        <button class="btn btn-primary btn-block btn-round">UPDATE</button>
+                        <button class="btn btn-primary btn-block btn-round">ACTUALIZAR</button>
                       </div>
                     </div>
                   </div>
@@ -250,7 +250,7 @@ if(!isset($_SESSION["user_id"]))
           <div class="col-md-6">
             <div class="card">
               <div class="card-header">
-                <h5 class="title">Other Settings</h5>
+                <h5 class="title">Otras Configuraciones</h5>
               </div>
               <div class="card-body">
                 <div class="row">
@@ -262,7 +262,7 @@ if(!isset($_SESSION["user_id"]))
 
                   <div class="col-md-6">
                     <div class="form-group">
-                      <button class="btn btn-primary btn-block" onclick="completed()">MAKE AS COMPLETED</button>
+                      <button class="btn btn-primary btn-block" onclick="completed()">Finalizar Examen</button>
                     </div>
                   </div>            
                   
@@ -273,7 +273,7 @@ if(!isset($_SESSION["user_id"]))
 
                   <div class="col-md-6">
                     <div class="form-group">
-                      <button class="btn btn-primary btn-block" onclick="deleted()">DELETE TEST</button>
+                      <button class="btn btn-primary btn-block" onclick="deleted()">Borrar Exámen</button>
                     </div>  
                   </div>        
                 </div>
@@ -285,7 +285,7 @@ if(!isset($_SESSION["user_id"]))
                 <div class="row">
                   <div class="col-md-12">
                     <div class="form-group">
-                      <button class="btn btn-primary btn-block" onclick="student_data()">GET STUDENT DATA</button>
+                      <button class="btn btn-primary btn-block" onclick="student_data()">Obtener Datos de los Estudiantes</button>
                     </div>
                   </div>   
                 </div>
@@ -294,14 +294,14 @@ if(!isset($_SESSION["user_id"]))
                   <input type="hidden" name="other_settings">
                   <input type="hidden" name="test_id" value="<?= $test_id;?>">
                   <div class="form-group" style="margin-top:10px;">
-                    <label>Add guest student to test</label>
-                    <input type="text" class="form-control" name="student_roll_no" placeholder="Student Roll number"/>
+                    <label>Agregar Estudiantes Adcionales</label>
+                    <input type="text" class="form-control" name="student_roll_no" placeholder="Matricula de Estudiante"/>
                   </div>
 
                   <div class="row center-element">
                     <div class="col-md-8">
                       <div class="form-group">
-                        <button class="btn btn-primary btn-block">ADD</button>
+                        <button class="btn btn-primary btn-block">Agregar</button>
                       </div>
                     </div>
                   </div>
@@ -318,17 +318,17 @@ if(!isset($_SESSION["user_id"]))
               <div class="card-header">
                 <div class="row">
                   <div class="col-md-4">
-                    <h5 class="title">Test Questions</h5>
+                    <h5 class="title">Preguntas del Exámen</h5>
                   </div>
                   <form id="form-add-questions" method="POST" action="add_question.php">
                     <input type="hidden" name="test_id" value="<?= $test_id;?>">
                   </form>
                   <div class="col-md-4">
-                    <button class="btn btn-primary btn-block btn-round" data-toggle="modal" data-target="#exampleModal" style="margin-top:0px;width:200px !important;float:right !important;">UPLOAD</button>
+                    <button class="btn btn-primary btn-block btn-round" data-toggle="modal" data-target="#exampleModal" style="margin-top:0px;width:200px !important;float:right !important;">Importar</button>
                   </div>
 
                   <div class="col-md-4">
-                    <button class="btn btn-primary btn-block btn-round" onclick="redirect_to_add_question()" style="margin-top:0px;width:200px !important;float:right !important;">ADD NEW QUESTION</button>
+                    <button class="btn btn-primary btn-block btn-round" onclick="redirect_to_add_question()" style="margin-top:0px;width:200px !important;float:right !important;">Agregar Nueva Pregunta</button>
                   </div>
                 </div>  
               </div>
@@ -336,15 +336,15 @@ if(!isset($_SESSION["user_id"]))
                   <table id="example" class="table table-striped table-bordered" style="width:100%">
                     <thead>
                         <tr>
-                            <th>SERIAL NO</th>
-                            <th>Question title</th>
-                            <th>Option (A)</th>
-                            <th>Option (B)</th>
-                            <th>Option (C)</th>
-                            <th>Option (D)</th>
-                            <th>Correct Option</th>
-                            <th>Score</th>
-                            <th>Delete</th>
+                            <th>Número</th>
+                            <th>Pregunta</th>
+                            <th>Opción (A)</th>
+                            <th>Opción (B)</th>
+                            <th>Opción (C)</th>
+                            <th>Opción (D)</th>
+                            <th>Opción Correcta</th>
+                            <th>Puntaje</th>
+                            <th>Borrar</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -394,16 +394,16 @@ if(!isset($_SESSION["user_id"]))
           <input type="hidden" name="type" id="type"> 
           <div class="modal-content">
             <div class="modal-header">
-              <h5 class="modal-title" id="exampleModalLabel">Select spreadsheet to import</h5>
+              <h5 class="modal-title" id="exampleModalLabel">Seleccionar la hoja de cálculo</h5>
             </div>
             <div class="modal-body">
-              <p><b>The spreadsheet column should contain (without header):</b> <br> Question, Option A, Option B, Option C, Option D, Correct Option, Score.</p>
-              <p><b>Accepted file formats are:</b> .xls, .xlsx and .ods</p>
+              <p><b>Las columnas de las hojas de cálculo deben de contener (sin encabezados):</b> <br> Pregunta, Opción A, Opción B, Opción C, Opción D, Opción Correcta, Puntaje.</p>
+              <p><b>Formatos Aceptados:</b> .xls, .xlsx and .ods</p>
               <input type="file" name="file" id="file" accept=".xls,.xlsx,.ods">
             </div>
             <div class="modal-footer">
-              <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-              <button type="button" class="btn btn-primary" onclick="file_upload_submit()">Upload</button>
+              <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+              <button type="button" class="btn btn-primary" onclick="file_upload_submit()">Importar</button>
             </div>
           </div>
         </form>

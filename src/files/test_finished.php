@@ -43,7 +43,7 @@
 			if(Cookies.get('test_submitted_status') == undefined)
 				window.location.replace("../index.php");
 			else{
-				$('#test_submit_status').text("Test "+Cookies.get('test_submitted_status')+", You will be logged out shortly....");
+				$('#test_submit_status').text("Prueba "+Cookies.get('test_submitted_status')+", La sesión se cerrará en corto....");
 			setTimeout(function() { 
 				Cookies.remove('test_submitted_status');
                 window.location.replace("../index.php");

@@ -19,25 +19,25 @@ $activePage = basename($_SERVER['PHP_SELF'], ".php");
         <li class="<?=($activePage=='add_data')? 'active': ''; ?>">
           <a href="./add_data.php">
             <i class="now-ui-icons business_badge"></i>
-            <p>Add Class / Student</p>
+            <p>Agregar Materia / Estudiante</p>
           </a>
         </li>
         <li class="<?=($activePage=='statistics' || $activePage=='test_stats' || $activePage=='test_question_stats')? 'active': ''; ?>">
           <a href="./statistics.php">
             <i class="now-ui-icons business_chart-bar-32"></i>
-            <p>Statistics</p>
+            <p>Estadisticas</p>
           </a>
         </li>
         <li class="<?=($activePage=='view_data')? 'active': ''; ?>">
           <a href="./view_data.php">
             <i class="now-ui-icons design_bullet-list-67"></i>
-            <p>View Data</p>
+            <p>Ver Datos</p>
           </a>
         </li>
         <li class="<?=($activePage=='logout')? 'active': ''; ?>">
           <a href="./logout.php">
             <i class="now-ui-icons media-1_button-power"></i>
-            <p>Logout</p>
+            <p>Salir</p>
           </a>
         </li>
       </ul>

@@ -7,8 +7,8 @@
     $test_id = $_POST['test_id'];
 ?>
 
-    <p>You should be redirected in a few seconds.</p>
-    <p>If you're not, please check the file format. You can click <a href="dashboard.php">here</a> to go back.</p>
+    <p>Deberias ser redirigido en pocos segundos.</p>
+    <p>Si no de favor revise el formato. Puedes dar click <a href="dashboard.php">aqui</a>.</p>
 
     <form id="form-completed" method="POST" action="test_details.php">
         <input type="hidden" name="test_id" value="<?= $test_id;?>">

@@ -35,7 +35,7 @@ if(isset($_SESSION['test_ongoing']))
 			<div class="container-menu-header">
 				<div class="wrap_header">
 					<!-- Logo -->
-                    <img src="admin/assets/img/coedupro.png" alt="IMG-LOGO" style="width:200px">
+                    <img src="admin/assets/img/coedupro.png" alt="IMG-LOGO" style="width:150px; float:left">
 					<a href="index.php" class="logo">
 
 					</a>
@@ -65,12 +65,12 @@ if(isset($_SESSION['test_ongoing']))
 						</div>
 						<div class="login100-form validate-form">
 						<span class="login100-form-title">
-							Student Login
+							Acceso Estudiantes
 						</span>
 						
 						<div class="wrap-input100 validate-input">
 							<input class="input100" id="studentRollNumber" type="text" name="rollNumber"
-								placeholder="Roll Number" required>
+								placeholder="Matricula" required>
 							<span class="focus-input100"></span>
 							<span class="symbol-input100">
 								<i class="fa fa-user-circle-o" aria-hidden="true"></i>
@@ -80,7 +80,7 @@ if(isset($_SESSION['test_ongoing']))
 
 						<div class="wrap-input100 validate-input">
 							<input class="input100" id="studentPassword" type="password" name="password"
-								placeholder="Password" required>
+								placeholder="Contraseña" required>
 							<span class="focus-input100"></span>
 							<span class="symbol-input100">
 								<i class="fa fa-lock" aria-hidden="true"></i>
@@ -90,7 +90,7 @@ if(isset($_SESSION['test_ongoing']))
 
 						<div class="container-login100-form-btn">
 							<button class="login100-form-btn" onclick="login()">
-								Login
+								Ingresar
 							</button>
 						</div>
 

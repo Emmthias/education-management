@@ -45,7 +45,7 @@ if(!isset($_SESSION["user_id"]))
                 <span class="navbar-toggler-bar bar3"></span>
               </button>
             </div>
-            <a class="navbar-brand" href="#pablo">Add Class / Student</a>
+            <a class="navbar-brand" href="#">Agregar Materia / Estudiante</a>
           </div>
           <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navigation" aria-controls="navigation-index" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-bar navbar-kebab"></span>
@@ -63,25 +63,25 @@ if(!isset($_SESSION["user_id"]))
           <div class="col-md-6">
             <div class="card">
               <div class="card-header">
-                <h5 class="title">Add New Class Data</h5>
+                <h5 class="title">Agregar nueva Materia</h5>
               </div>
               <div class="card-body">
                   <input type="hidden" name="general_settings">
                   <div class="row">
                     <div class="col-md-12">
                       <div class="form-group">
-                        <label>Class name</label>
-                        <input type="text" class="form-control" id = "class_name" name="site_name" placeholder="Class name"/>
+                        <label>Nombre de la Materia</label>
+                        <input type="text" class="form-control" id = "class_name" name="site_name" placeholder="Nombre Materia"/>
                         <span id = "class_name_error" class="error text-danger"></span>
                       </div>
                       <div class="form-group">
-                        <label>Starting Roll number</label>
-                        <input type="text" class="form-control" id = "starting_roll_number" name="site_name" placeholder="Starting roll number"/>
+                        <label>Numero Inicial Matricula</label>
+                        <input type="text" class="form-control" id = "starting_roll_number" name="site_name" placeholder="Numero Inicial Matricula"/>
                         <span id = "starting_roll_error" class="error text-danger"></span>
                       </div>
                       <div class="form-group">
-                        <label>Ending Roll number</label>
-                        <input type="text" class="form-control" id = "ending_roll_number" name="site_name" placeholder="Ending roll number"/>
+                        <label>Numero Final Matricula</label>
+                        <input type="text" class="form-control" id = "ending_roll_number" name="site_name" placeholder="Numero Final Matricula"/>
                         <span id = "ending_roll_error" class="error text-danger"></span>
                       </div>
                     </div>
@@ -89,7 +89,7 @@ if(!isset($_SESSION["user_id"]))
                   <div class="row center-element">
                     <div class="col-md-8">
                       <div class="form-group"><br/>
-                        <button class="btn btn-primary btn-block btn-round" onclick = 'createNewClass()'>CREATE</button>
+                        <button class="btn btn-primary btn-block btn-round" onclick = 'createNewClass()'>CREAR</button>
                       </div>
                     </div>
                   </div>
@@ -100,19 +100,19 @@ if(!isset($_SESSION["user_id"]))
           <div class="col-md-6">
             <div class="card">
               <div class="card-header">
-                <h5 class="title">Add Student</h5>
+                <h5 class="title">Agregar Estudiante</h5>
               </div>
               <div class="card-body">
                   <input type="hidden" name="general_settings">
                   <div class="row">
                     <div class="col-md-12">
                         <select id="options" name="class_option" class="btn-round" required style="width:100%;">
-                            <option selected="true" value="" disabled="disabled">Select class for test</option>      
+                            <option selected="true" value="" disabled="disabled">Seleccionar Materia para Examen</option>
                         </select>
                         <span id = "extra_roll_class_error" class="error text-danger"></span>
 
                         <div class="form-group" style="margin-top:10px;">
-                            <label>Student Roll number</label>
+                            <label>Matricula</label>
                             <input type="text" class="form-control" id="extra_roll_number" name="site_name" placeholder="Student Roll number"/>
                             <span id = "extra_roll_error" class="error text-danger"></span>
                         </div>
@@ -121,7 +121,7 @@ if(!isset($_SESSION["user_id"]))
                   <div class="row center-element">
                     <div class="col-md-8">
                       <div class="form-group"><br/>
-                        <button class="btn btn-primary btn-block" onclick = 'addStudent()'>ADD</button>
+                        <button class="btn btn-primary btn-block" onclick = 'addStudent()'>AGREGAR</button>
                       </div>
                     </div>
                   </div>
