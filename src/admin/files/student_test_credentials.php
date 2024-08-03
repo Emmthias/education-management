@@ -103,7 +103,7 @@
                     <h5 class="title">Students Test Credentials</h5>
                   </div>
                 <div class="col-md-4">
-                    <button class="btn btn-primary btn-block btn-round" onclick="completed()" style="margin-top:0px;width:100px !important;float:right !important;">Print</button>
+<!--                    <button class="btn btn-primary btn-block btn-round" onclick="completed()" style="margin-top:0px;width:100px !important;float:right !important;">Print</button>-->
                   </div>
                 </div>  
               </div>
