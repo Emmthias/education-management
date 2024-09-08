@@ -5,7 +5,7 @@
         <script>
           document.write(new Date().getFullYear())
         </script>, Powered By
-        <a href="#" target="_blank">Emmthias ®</a>.
+        <a href="#" target="_blank">codinganddecoding</a>.
       </div>
     </div>
   </footer>
